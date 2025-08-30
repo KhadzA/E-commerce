@@ -1,20 +1,21 @@
 import { useState } from "react";
+import { useNavigate } from "react-router";
 
 function Login() {
   // State for input values
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   // Handle form submit
   const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
 
     if (!email || !password) {
       alert("Please fill in both email and password.");
       return;
     } else {
-      e.preventDefault();
-      console.log("Email:", email);
-      console.log("Password:", password);
+      navigate("/home");
     }
   };
 
