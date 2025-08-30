@@ -7,9 +7,15 @@ function Login() {
 
   // Handle form submit
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Email:", email);
-    console.log("Password:", password);
+
+    if (!email || !password) {
+      alert("Please fill in both email and password.");
+      return;
+    } else {
+      e.preventDefault();
+      console.log("Email:", email);
+      console.log("Password:", password);
+    }
   };
 
   return (
@@ -17,7 +23,7 @@ function Login() {
       <div className="max-w-[300px] w-full space-y-6 px-4">
         <div className="flex-1 flex flex-col items-center gap-16 min-h-0">
           <nav className="rounded-3xl border border-gray-200 p-6 dark:border-gray-700 space-y-4">
-            <p className="leading-6 text-gray-700 dark:text-gray-200 text-center">
+            <p className="leading-6 text-black dark:text-black text-center">
               LOGIN
             </p>
             <form onSubmit={handleSubmit}>
@@ -39,7 +45,7 @@ function Login() {
                 />
               </div>
 
-              <div className="leading-6 text-gray-700 dark:text-gray-200 text-center">
+              <div className="leading-6 text-gray-700 dark:text-black text-center">
                 <button type="submit">Login</button>
               </div>
             </form>
