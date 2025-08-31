@@ -15,8 +15,10 @@ export default [
     route("register", "./routes/auth/register.tsx"),
   ]),
 
-  layout("./routes/home/layout.tsx", [
-    route("home", "./routes/home/home.tsx"),
+  layout("./routes/authGuard.tsx", [
+    layout("./routes/home/layout.tsx", [
+      route("home", "./routes/home/home.tsx"),
+    ]),
   ]),
 
 ] satisfies RouteConfig;
