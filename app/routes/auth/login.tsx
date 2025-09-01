@@ -6,18 +6,25 @@ function Login() {
   // State for input values
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const role = "admin";
   const navigate = useNavigate();
 
-  // Handle form submit
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!email || !password) {
       alert("Please fill in both email and password.");
       return;
     } else {
-      navigate("/home?login_success=true");
+      handleRole();
     }
+  };
+  
+  const handleRole = () => {
+
+    if (role === "admin") {
+      navigate("/home?login_success=true");
+    } 
   };
 
   return (
@@ -29,7 +36,7 @@ function Login() {
             <p className="leading-6 text-black dark:text-black text-center">
               LOGIN
             </p>
-            <form onSubmit={handleSubmit}>
+            <form >
               <div>
                 <label>Email:</label>
                 <input 
@@ -49,7 +56,7 @@ function Login() {
               </div>
 
               <div className="leading-6 text-gray-700 dark:text-black text-center">
-                <button type="submit">Login</button>
+                <button onClick={handleLogin}>Login</button>
               </div>
             </form>
           </nav>
