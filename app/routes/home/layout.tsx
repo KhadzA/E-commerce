@@ -4,7 +4,7 @@ import { useNavigate, Link } from "react-router";
 function HomeLayout() {
     const navigate = useNavigate();
 
-    const pages = [
+    const NavPages = [
         { name: "Home", path: "/home" },
         { name: "Products", path: "/products" },
         { name: "Cart", path: "/cart" },
@@ -37,7 +37,7 @@ function HomeLayout() {
                     </header>
                     <nav className="rounded-3xl border border-gray-200 p-6 dark:border-gray-700 space-y-4">
 
-                        {pages.map((p) => (
+                        {NavPages.map((p) => (
                         <div key={p.name}>
                             <button onClick={() => handleNavigation(p.path)}>{p.name}</button>
                             <br />
