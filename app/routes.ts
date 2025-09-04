@@ -16,8 +16,11 @@ export default [
   ]),
 
   layout("./routes/authGuard.tsx", [
-    layout("./routes/home/layout.tsx", [
-      route("home", "./routes/home/home.tsx"),
+    layout("./routes/admin/home/layout.tsx", [
+      route("home", "./routes/admin/home/home.tsx"),
+    ]),
+    layout("./routes/admin/products/layout.tsx", [
+      route("products", "./routes/admin/products/product.tsx"),
     ]),
   ]),
 

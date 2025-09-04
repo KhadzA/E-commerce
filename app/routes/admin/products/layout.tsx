@@ -1,0 +1,58 @@
+import { Outlet } from "react-router";
+import { useNavigate, Link } from "react-router";
+
+function ProductLayout() {
+    const navigate = useNavigate();
+
+    const NavPages = [
+        { name: "Home", path: "/home" },
+        { name: "Products", path: "/products" },
+        { name: "Cart", path: "/cart" },
+        { name: "Profile", path: "/profile" },
+    ];
+
+    const handleNavigation = (path: string) => {
+        navigate(path);
+    };
+
+
+    const handleLogout = () => {
+
+        if (true) {
+            navigate("/login?logout_success=true");
+            return;
+        } else {
+        
+        }
+    };
+    
+    return (
+        <main className="flex items-center justify-center pt-16 pb-4">
+            <div className="max-w-[300px] w-full space-y-6 px-4">
+                <div className="flex-1 flex flex-col items-center gap-16 min-h-0">
+                    <header className="rounded-3xl border border-gray-200 p-6 dark:border-gray-700 space-y-4">
+                        <p className="leading-6 text-black dark:text-black text-center">
+                            PRODUCT LAYOUT
+                        </p>
+                    </header>
+                    <nav className="rounded-3xl border border-gray-200 p-6 dark:border-gray-700 space-y-4">
+
+                        {NavPages.map((p) => (
+                        <div key={p.name}>
+                            <button onClick={() => handleNavigation(p.path)}>{p.name}</button>
+                            <br />
+                        </div>
+                        ))}
+                        <button onClick={handleLogout}>Logout</button>
+
+                    </nav>
+                        
+                    {/* This is where child route (Home.tsx) will render */}
+                    <Outlet />
+                </div>
+            </div>
+        </main>
+    );
+}
+
+export default ProductLayout;
