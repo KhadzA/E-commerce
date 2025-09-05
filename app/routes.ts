@@ -22,6 +22,12 @@ export default [
     layout("./routes/admin/products/layout.tsx", [
       route("products", "./routes/admin/products/product.tsx"),
     ]),
+    layout("./routes/admin/cart/layout.tsx", [
+      route("cart", "./routes/admin/cart/cart.tsx"),
+    ]),
+    layout("./routes/admin/profile/layout.tsx", [
+      route("profile", "./routes/admin/profile/profile.tsx"),
+    ]),
   ]),
 
 ] satisfies RouteConfig;
