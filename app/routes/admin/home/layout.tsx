@@ -114,9 +114,11 @@ function HomeLayout({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* Main Content */}
-      <main className={`pt-16 transition-all duration-300 ${sidebarOpen ? "ml-64" : "ml-16"}`}>
-        <div className="p-6">
-            <Outlet />
+      <main
+        className={`fixed top-16 bottom-0 right-0 transition-all duration-300 ${sidebarOpen ? "left-64" : "left-16"} overflow-hidden`}
+      >
+        <div className="h-full overflow-y-auto p-6">
+          <Outlet />
         </div>
       </main>
 
