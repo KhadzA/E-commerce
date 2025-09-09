@@ -21,16 +21,30 @@ function Product() {
 
   const handleAddCart = (index: number) => {
     const product = {
-      name: productName[index], // pick the product at that index
-      quantity: quantity[index],       // still using the same quantity state for now
+      name: productName[index],
+      quantity: quantity[index],
     };
+
+    // Get current cart from localStorage (or empty array if none)
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+    // Add new product
+    cart.push(product);
+
+    // Save back to localStorage
+    localStorage.setItem("cart", JSON.stringify(cart));
 
     alert(`Added ${product.quantity} ${product.name}(s) to cart`);
   };
 
 
-  const handleBuyNow = () => {
-    alert(`Proceeding to buy ${productName} ${quantity} item(s)`);
+  const handleBuyNow = (index: number) => {
+    const product = {
+      name: productName[index], 
+      quantity: quantity[index],
+    };    
+
+    alert(`Proceeding to buy ${product.name} ${product.quantity} item(s)`);
   }
 
 
@@ -51,7 +65,7 @@ function Product() {
           <br />
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
             <button onClick={() => handleAddCart(0)}>Add to cart</button>
-            <button onClick={handleBuyNow}>Buy now</button>
+            <button onClick={() => handleBuyNow(0)}>Buy now</button>
           </div>
         </div>
 
@@ -68,7 +82,7 @@ function Product() {
           <br />
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
             <button onClick={() => handleAddCart(1)}>Add to cart</button>
-            <button onClick={handleBuyNow}>Buy now</button>
+            <button onClick={() => handleBuyNow(1)}>Buy now</button>
           </div>
         </div>
 
@@ -85,7 +99,7 @@ function Product() {
           <br />
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
             <button onClick={() => handleAddCart(2)}>Add to cart</button>
-            <button onClick={handleBuyNow}>Buy now</button>
+            <button onClick={() => handleBuyNow(2)}>Buy now</button>
           </div>
         </div>
 
