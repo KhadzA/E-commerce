@@ -26,16 +26,25 @@ function Product() {
     };
 
     // Get current cart from localStorage (or empty array if none)
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const cart: { name: string; quantity: number }[] = JSON.parse(localStorage.getItem("cart") || "[]");
 
-    // Add new product
-    cart.push(product);
+    // Check if product already exists in cart
+    const existingProductIndex = cart.findIndex(item => item.name === product.name);
+
+    if (existingProductIndex !== -1) {
+      // If exists, update quantity
+      cart[existingProductIndex].quantity += product.quantity;
+    } else {
+      // If not, add new product
+      cart.push(product);
+    }
 
     // Save back to localStorage
     localStorage.setItem("cart", JSON.stringify(cart));
 
     alert(`Added ${product.quantity} ${product.name}(s) to cart`);
   };
+
 
 
   const handleBuyNow = (index: number) => {

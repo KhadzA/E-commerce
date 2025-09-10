@@ -11,11 +11,16 @@ function Cart() {
   const handleQuantity = (index: number, type: "add" | "minus") => {
     setCart((prevCart) => {
       const newCart = [...prevCart];
+      
       if (type === "add") {
         newCart[index].quantity += .5;  //THIS DOES NOT MAKE SENSE BUT IT WORKS SO WHY NOT
       } else if (type === "minus" && newCart[index].quantity > 1) {
         newCart[index].quantity -= .5;  //WHY .5 MAAAN I DON'T WANNA THINK ABOUT IT
+      } else {
+        // remove the product if quantity would go to 0
+        newCart.splice(index, 1);
       }
+
       localStorage.setItem("cart", JSON.stringify(newCart)); 
       return newCart;
     });
