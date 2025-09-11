@@ -56,9 +56,18 @@ function Product() {
     alert(`Proceeding to buy ${product.name} ${product.quantity} item(s)`);
   }
 
+  const handleAddProduct = () => {
+
+  }
+
 
   return (
     <div>
+
+      <div className="addProduct">
+        <textarea name="addProduct">Product name</textarea>
+      </div>
+
       <div className="productList">
 
         <div className="product-card" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem", padding: "2rem" }}>
