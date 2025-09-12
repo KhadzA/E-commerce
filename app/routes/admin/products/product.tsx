@@ -65,7 +65,12 @@ function Product() {
     <div>
 
       <div className="addProduct">
-        <textarea name="addProduct">Product name</textarea>
+        <label>Product name:</label>
+        <input
+          type="text"
+          value={productName}
+          onChange={(e) => setProductName(e.target.value)}
+        />
       </div>
 
       <div className="productList">
