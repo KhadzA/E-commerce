@@ -1,13 +1,21 @@
-import { use, useState } from "react";
+import { use, useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 
 function Product() {
-  const [quantity, setQuantities] = useState<number[]>([1, 1, 1]); 
-  const [productName, setProductName] = useState<string[]>([]);
+  const [products, setProducts] = useState<{ name: string }[]>([]);
+  const [quantity, setQuantity] = useState<number[]>([]);
   const [product, setProduct] = useState("");
+  
+
+  // Load products from localStorage on mount
+  useEffect(() => {
+    const stored = JSON.parse(localStorage.getItem("products") || "[]");
+    setProducts(stored);
+    setQuantity(stored.map(() => 1)); // init each product with qty = 1
+  }, []);
 
   const handleQuantity = (index: number, type: "add" | "minus") => {
-    setQuantities((prev) => {
+    setQuantity((prev) => {
       const newQuantity = [...prev];
       if (type === "add") {
         newQuantity[index] += 1;
@@ -21,7 +29,7 @@ function Product() {
 
   const handleAddCart = (index: number) => {
     const product = {
-      name: productName[index],
+      name: products[index].name,
       quantity: quantity[index],
     };
 
@@ -49,22 +57,39 @@ function Product() {
 
   const handleBuyNow = (index: number) => {
     const product = {
-      name: productName[index], 
+      name: products[index].name, 
       quantity: quantity[index],
     };    
 
     alert(`Proceeding to buy ${product.name} ${product.quantity} item(s)`);
   }
 
-const handleAddProduct = () => {
-  if (!product.trim()) return; // ignore empty input
+const handleAddProduct = (name: string) => {
+  if (!name.trim()) return;
 
-  // add the new product to the list
-  setProductName((prev) => [...prev, product]);
+  const product = { name };
 
-  // clear the input
+  // Get existing products from localStorage
+  const storedProducts: { name: string }[] = JSON.parse(localStorage.getItem("products") || "[]");
+
+  // Check if it already exists
+  const exists = storedProducts.some((p) => p.name === product.name);
+  if (!exists) {
+    storedProducts.push(product);
+
+    // Save back to localStorage
+    localStorage.setItem("products", JSON.stringify(storedProducts));
+
+    // uupdate React state 
+    setProducts(storedProducts);
+    setQuantity((prev) => [...prev, 1]); // add new product with initial qty = 1
+  }
+
+  // Reset the input field
   setProduct("");
 };
+
+
 
 
 
@@ -80,47 +105,45 @@ const handleAddProduct = () => {
         />
       </div>
 
-      <button onClick={handleAddProduct}>Add Product</button>
+      <button onClick={() => handleAddProduct(product)}>Add Product</button>
 
       <div className="productList">
+        <ul className="productList">
+          {products.map((prod, index) => (
+            <li key={index}>
+              <div
+                className="product-card"
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: "1rem",
+                  padding: "2rem",
+                }}
+              >
+                <span className="product-images">img</span>
+                <p>{prod.name}</p>
 
-      <ul className="productList">
-        {productName.map((name, index) => (
-          <li key={index}>
-            <div
-              className="product-card"
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: "1rem",
-                padding: "2rem",
-              }}
-            >
-              <span className="product-images">img</span>
-              <p>{name}</p>
+                <div style={{ display: "flex", alignItems: "center", gap: ".5rem" }}>
+                  <button className="add" onClick={() => handleQuantity(index, "minus")}>
+                    -
+                  </button>
+                  <span className="quantity">{quantity[index]}</span>
+                  <button className="minus" onClick={() => handleQuantity(index, "add")}>
+                    +
+                  </button>
+                </div>
 
-              <div style={{ display: "flex", alignItems: "center", gap: ".5rem" }}>
-                <button className="add" onClick={() => handleQuantity(index, "minus")}>
-                  -
-                </button>
-                <span className="quantity">{quantity[index]}</span>
-                <button className="minus" onClick={() => handleQuantity(index, "add")}>
-                  +
-                </button>
+                <br />
+
+                <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                  <button onClick={() => handleAddCart(index)}>Add to cart</button>
+                  <button>Buy now</button>
+                </div>
               </div>
-
-              <br />
-
-              <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                <button onClick={() => handleAddCart(index)}>Add to cart</button>
-                <button onClick={() => handleBuyNow(index)}>Buy now</button>
-              </div>
-            </div>
-          </li>
-        ))}
-      </ul>
-
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
