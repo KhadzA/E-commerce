@@ -22,6 +22,11 @@ function Product() {
       const newQuantity = [...prev];
       if (type === "add") {
         newQuantity[index] += 1;
+
+        if (newQuantity[index] > products[index].stock) {
+          newQuantity[index] = products[index].stock; // cap at stock
+        }
+
       } else if (type === "minus" && newQuantity[index] > 1) {
         newQuantity[index] -= 1;
       }
@@ -138,8 +143,10 @@ const handleAddProduct = (name: string, stock: number) => {
                   padding: "2rem",
                 }}
               >
-                <span className="product-images">img</span>
+                <span className="productImage">img</span>
                 <p>{prod.name}</p>
+
+                <span className="productStock">Stock: {prod.stock}</span>
 
                 <div style={{ display: "flex", alignItems: "center", gap: ".5rem" }}>
                   <button className="add" onClick={() => handleQuantity(index, "minus")}>
@@ -150,8 +157,6 @@ const handleAddProduct = (name: string, stock: number) => {
                     +
                   </button>
                 </div>
-
-                <br />
 
                 <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
                   <button onClick={() => handleAddCart(index)}>Add to cart</button>
