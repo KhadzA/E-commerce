@@ -3,11 +3,16 @@ import { useNavigate } from "react-router";
 
 function Product() {
 
-  const [products, setProducts] = useState<{ name: string; stock: number }[]>([]);
+  const [products, setProducts] = useState<{
+    name: string;
+    stock: number;
+    category: string;
+  }[]>([]);
+
   const [quantity, setQuantity] = useState<number[]>([]);
   const [productName, setProduct] = useState("");
   const [stock, setStock] = useState<number | "">("");
-
+  const [productCategory, setProductCategory] = useState("");
   
 
   // Load products from localStorage on mount
@@ -39,10 +44,15 @@ function Product() {
     const selectedProduct = {
       name: products[index].name,
       quantity: quantity[index],
+      category: products[index].category,
     };
 
     // Get current cart from localStorage (or empty array if none)
-    const cart: { name: string; quantity: number }[] = JSON.parse(localStorage.getItem("cart") || "[]");
+    const cart: {
+      name: string;
+      quantity: number 
+      category: string;
+    }[] = JSON.parse(localStorage.getItem("cart") || "[]");
 
     // Check if product already exists in cart
     const existingProductIndex = cart.findIndex(item => item.name === selectedProduct.name);
@@ -72,13 +82,26 @@ function Product() {
     alert(`Proceeding to buy ${selectedProduct.name} ${selectedProduct.quantity} item(s)`);
   }
 
-const handleAddProduct = (name: string, stock: number) => {
+  const handleAddProduct = (
+    name: string,
+    stock: number,
+    category: string
+  
+  ) => {
   if (!name.trim()) return;
 
-  const selectedProduct = { name, stock: Number(stock) };
+  const selectedProduct = {
+    name,
+    stock: Number(stock),
+    category
+  };
 
   // Get existing products from localStorage
-  const storedProducts: { name: string; stock: number }[] = JSON.parse(
+  const storedProducts: {
+    name: string;
+    stock: number;
+    category: string;
+  }[] = JSON.parse(
     localStorage.getItem("products") || "[]"
   );
 
@@ -124,10 +147,23 @@ const handleAddProduct = (name: string, stock: number) => {
               const val = e.target.value;
               setStock(val === "" ? "" : Number(val)); // allow empty or number
             }}
+        />
+        <br />
+        <label>Product category:</label>
+          <input
+            type="text"
+            value={productCategory}
+            onChange={(e) => setProductCategory(e.target.value)}
           />
       </div>
 
-      <button onClick={() => handleAddProduct(productName, Number(stock))}>Add Product</button>
+      <button onClick={() => handleAddProduct(
+        productName,
+        Number(stock),
+        productCategory
+      )}>
+        Add Product
+      </button>
 
       <div className="productList">
         <ul className="productList">
@@ -147,6 +183,7 @@ const handleAddProduct = (name: string, stock: number) => {
                 <p>{prod.name}</p>
 
                 <span className="productStock">Stock: {prod.stock}</span>
+                <span className="productStock">Stock: {prod.category}</span>
 
                 <div style={{ display: "flex", alignItems: "center", gap: ".5rem" }}>
                   <button className="add" onClick={() => handleQuantity(index, "minus")}>
