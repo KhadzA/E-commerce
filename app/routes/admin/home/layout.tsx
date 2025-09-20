@@ -1,7 +1,7 @@
 import type React from "react"
 import { useState } from "react"
 import { useNavigate, useLocation, Outlet } from "react-router"
-import { Menu, X, Home, Package, ShoppingCart, User, LogOut } from "lucide-react"
+import { Menu, X, Home, Package, ShoppingCart, User, ReceiptText, LogOut } from "lucide-react"
 
 function HomeLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate()
@@ -11,6 +11,7 @@ function HomeLayout({ children }: { children: React.ReactNode }) {
   const NavPages = [
     { name: "Home", path: "/home", icon: Home },
     { name: "Products", path: "/products", icon: Package },
+    { name: "Orders", path: "/orders", icon: ReceiptText },
     { name: "Cart", path: "/cart", icon: ShoppingCart },
     { name: "Profile", path: "/profile", icon: User },
   ]

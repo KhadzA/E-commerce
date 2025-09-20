@@ -22,6 +22,9 @@ export default [
     layout("./routes/admin/products/layout.tsx", [
       route("products", "./routes/admin/products/product.tsx"),
     ]),
+    layout("./routes/admin/orders/layout.tsx", [
+      route("orders", "./routes/admin/orders/orders.tsx"),
+    ]),
     layout("./routes/admin/cart/layout.tsx", [
       route("cart", "./routes/admin/cart/cart.tsx"),
     ]),

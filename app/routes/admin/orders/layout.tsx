@@ -3,7 +3,7 @@ import { useState } from "react"
 import { useNavigate, useLocation, Outlet } from "react-router"
 import { Menu, X, Home, Package, ShoppingCart, User, ReceiptText, LogOut } from "lucide-react"
 
-function ProfileLayout({ children }: { children: React.ReactNode }) {
+function OrdersLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate()
   const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -131,4 +131,4 @@ function ProfileLayout({ children }: { children: React.ReactNode }) {
   )
 }
 
-export default ProfileLayout
+export default OrdersLayout
