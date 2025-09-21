@@ -75,11 +75,22 @@ function Product() {
 
   const handleBuyNow = (index: number) => {
     const selectedProduct = {
-      name: products[index].name, 
+      name: products[index].name,
       quantity: quantity[index],
-    };    
+    };
 
-    alert(`Proceeding to buy ${selectedProduct.name} ${selectedProduct.quantity} item(s)`);
+    // Get current orders from localStorage (or empty array if none)
+    const orders: {
+      name: string;
+      quantity: number 
+    }[] = JSON.parse(localStorage.getItem("orders") || "[]");
+
+    // Save back to localStorage
+    orders.push(selectedProduct);
+    localStorage.setItem("orders", JSON.stringify(orders));
+
+
+    alert(`Ordered ${selectedProduct.quantity} ${selectedProduct.name}(s)`);
   }
 
   const handleAddProduct = (
