@@ -73,25 +73,36 @@ function Product() {
 
 
 
-  const handleBuyNow = (index: number) => {
-    const selectedProduct = {
-      name: products[index].name,
-      quantity: quantity[index],
+const handleBuyNow = (index: number) => {
+  const selectedProduct = {
+    name: products[index].name,
+    quantity: quantity[index],
+  };
+
+  // Get current orders
+  const orders: { name: string; quantity: number; }[] =
+    JSON.parse(localStorage.getItem("orders") || "[]");
+
+  if (selectedProduct.quantity) {
+    // Reduce stock
+    const updatedProducts = [...products];
+    updatedProducts[index] = {
+      ...updatedProducts[index],
+      stock: updatedProducts[index].stock - selectedProduct.quantity,
     };
 
-    // Get current orders from localStorage (or empty array if none)
-    const orders: {
-      name: string;
-      quantity: number 
-    }[] = JSON.parse(localStorage.getItem("orders") || "[]");
+    // Save updated products back
+    localStorage.setItem("products", JSON.stringify(updatedProducts));
+    setProducts(updatedProducts);
 
-    // Save back to localStorage
+    // Add to orders
     orders.push(selectedProduct);
     localStorage.setItem("orders", JSON.stringify(orders));
 
-
     alert(`Ordered ${selectedProduct.quantity} ${selectedProduct.name}(s)`);
   }
+};
+
 
   const handleAddProduct = (
     name: string,

@@ -68,11 +68,33 @@ function Cart() {
 
   const handleBuyNow = (index: number) => {
     const selectedProduct = {
-      name: products[index].name, 
-    };    
+      name: products[index].name,
+      quantity: quantity[index],
+    };
 
-    alert(`Proceeding to buy ${selectedProduct.name}`);
-  }
+    // Get current orders
+    const orders: { name: string; quantity: number; }[] =
+      JSON.parse(localStorage.getItem("orders") || "[]");
+
+    if (selectedProduct.quantity) {
+      // Reduce stock
+      const updatedProducts = [...products];
+      updatedProducts[index] = {
+        ...updatedProducts[index],
+        stock: updatedProducts[index].stock - selectedProduct.quantity,
+      };
+
+      // Save updated products back
+      localStorage.setItem("products", JSON.stringify(updatedProducts));
+      setProducts(updatedProducts);
+
+      // Add to orders
+      orders.push(selectedProduct);
+      localStorage.setItem("orders", JSON.stringify(orders));
+
+      alert(`Ordered ${selectedProduct.quantity} ${selectedProduct.name}(s)`);
+    }
+  };
 
 
   return (
