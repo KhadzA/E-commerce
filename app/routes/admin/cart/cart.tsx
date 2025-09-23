@@ -63,28 +63,61 @@ function Cart() {
       return;
     }
 
-    alert(`Buying: ${selectedItems.join(", ")}`);
+    // Get current orders
+    const orders: { name: string; quantity: number }[] =
+      JSON.parse(localStorage.getItem("orders") || "[]");
+
+    let updatedProducts = [...products];
+    let updatedCart = [...cart];
+
+    selectedItems.forEach((name) => {
+      const item = updatedCart.find((c) => c.name === name);
+      if (!item) return;
+
+      // Reduce stock
+      updatedProducts = updatedProducts.map((p) =>
+        p.name === name ? { ...p, stock: p.stock - item.quantity } : p
+      );
+
+      // Add to orders
+      orders.push({ name, quantity: item.quantity });
+
+      // Remove from cart
+      updatedCart = updatedCart.filter((c) => c.name !== name);
+    });
+
+    // Save updates
+    localStorage.setItem("products", JSON.stringify(updatedProducts));
+    localStorage.setItem("orders", JSON.stringify(orders));
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+
+    setProducts(updatedProducts);
+    setCart(updatedCart);
+    setSelectedItems([]);
+
+    alert(`Ordered: ${selectedItems.join(", ")}`);
   };
+
 
   const handleBuyNow = (index: number) => {
     const selectedProduct = {
-      name: products[index].name,
-      quantity: quantity[index],
+      name: cart[index].name,
+      quantity: cart[index].quantity,
     };
 
     // Get current orders
-    const orders: { name: string; quantity: number; }[] =
+    const orders: { name: string; quantity: number }[] =
       JSON.parse(localStorage.getItem("orders") || "[]");
 
     if (selectedProduct.quantity) {
-      // Reduce stock
-      const updatedProducts = [...products];
-      updatedProducts[index] = {
-        ...updatedProducts[index],
-        stock: updatedProducts[index].stock - selectedProduct.quantity,
-      };
+      // Find product to reduce stock
+      const updatedProducts = products.map((p) =>
+        p.name === selectedProduct.name
+          ? { ...p, stock: p.stock - selectedProduct.quantity }
+          : p
+      );
 
-      // Save updated products back
+      // Save updated products
       localStorage.setItem("products", JSON.stringify(updatedProducts));
       setProducts(updatedProducts);
 
@@ -92,9 +125,15 @@ function Cart() {
       orders.push(selectedProduct);
       localStorage.setItem("orders", JSON.stringify(orders));
 
+      // Remove from cart
+      const updatedCart = cart.filter((_, i) => i !== index);
+      localStorage.setItem("cart", JSON.stringify(updatedCart));
+      setCart(updatedCart);
+
       alert(`Ordered ${selectedProduct.quantity} ${selectedProduct.name}(s)`);
     }
   };
+
 
 
   return (
