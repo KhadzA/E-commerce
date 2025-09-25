@@ -109,30 +109,42 @@ function Cart() {
     const orders: { name: string; quantity: number }[] =
       JSON.parse(localStorage.getItem("orders") || "[]");
 
-    if (selectedProduct.quantity) {
-      // Find product to reduce stock
-      const updatedProducts = products.map((p) =>
-        p.name === selectedProduct.name
-          ? { ...p, stock: p.stock - selectedProduct.quantity }
-          : p
-      );
+    // Find the product in products
+    const product = products.find((p) => p.name === selectedProduct.name);
 
-      // Save updated products
-      localStorage.setItem("products", JSON.stringify(updatedProducts));
-      setProducts(updatedProducts);
-
-      // Add to orders
-      orders.push(selectedProduct);
-      localStorage.setItem("orders", JSON.stringify(orders));
-
-      // Remove from cart
-      const updatedCart = cart.filter((_, i) => i !== index);
-      localStorage.setItem("cart", JSON.stringify(updatedCart));
-      setCart(updatedCart);
-
-      alert(`Ordered ${selectedProduct.quantity} ${selectedProduct.name}(s)`);
+    if (!product) {
+      alert("Product not found!");
+      return;
     }
+
+    // Check stock before subtracting
+    if (selectedProduct.quantity > product.stock) {
+      alert(`Not enough stock for ${selectedProduct.name}`);
+      return;
+    }
+
+    // Update products with reduced stock
+    const updatedProducts = products.map((p) =>
+      p.name === selectedProduct.name
+        ? { ...p, stock: p.stock - selectedProduct.quantity }
+        : p
+    );
+
+    localStorage.setItem("products", JSON.stringify(updatedProducts));
+    setProducts(updatedProducts);
+
+    // Add to orders
+    orders.push(selectedProduct);
+    localStorage.setItem("orders", JSON.stringify(orders));
+
+    // Remove from cart
+    const updatedCart = cart.filter((_, i) => i !== index);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    setCart(updatedCart);
+
+    alert(`Ordered ${selectedProduct.quantity} ${selectedProduct.name}(s)`);
   };
+
 
 
 

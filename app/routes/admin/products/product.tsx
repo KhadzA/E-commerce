@@ -91,6 +91,11 @@ const handleBuyNow = (index: number) => {
       stock: updatedProducts[index].stock - selectedProduct.quantity,
     };
 
+    if (updatedProducts[index].stock < 0) {
+      alert(`Not enough stock for ${selectedProduct.name}`);
+      return;
+    }
+
     // Save updated products back
     localStorage.setItem("products", JSON.stringify(updatedProducts));
     setProducts(updatedProducts);
