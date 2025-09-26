@@ -13,6 +13,11 @@ function Product() {
   const [productName, setProduct] = useState("");
   const [stock, setStock] = useState<number | "">("");
   const [productCategory, setProductCategory] = useState("");
+  const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [editForm, setEditForm] = useState({ name: "", stock: 0, category: "" });
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+
+
   
 
   // Load products from localStorage on mount
@@ -149,7 +154,68 @@ const handleBuyNow = (index: number) => {
   // Reset inputs
   setProduct("");
   setStock("");
-};
+  };
+  
+  // toggle selection for a product
+  const toggleSelection = (name: string) => {
+    setSelectedItems((prev) =>
+      prev.includes(name)
+        ? prev.filter((item) => item !== name) // remove if already selected
+        : [...prev, name] // add if not selected
+    );
+  };
+
+  const handleDeleteSelected = () => {
+    if (selectedItems.length === 0) {
+      alert("No products selected!");
+      return;
+    }
+
+    const updatedProducts = products.filter(
+      (prod) => !selectedItems.includes(prod.name)
+    );
+
+    setProducts(updatedProducts);
+    localStorage.setItem("products", JSON.stringify(updatedProducts));
+    setSelectedItems([]); // clear selection
+  };
+
+  const handleDeleteProduct = (name: string) => {
+    // remove product from state
+    const updatedProducts = products.filter((p) => p.name !== name);
+
+    // update localStorage
+    localStorage.setItem("products", JSON.stringify(updatedProducts));
+
+    // update React state
+    setProducts(updatedProducts);
+  };
+
+  const handleEditProduct = (index: number) => {
+    const product = products[index];
+    setEditForm({ name: product.name, stock: product.stock, category: product.category });
+    setEditIndex(index);
+  };
+
+  const handleSaveEdit = () => {
+    if (editIndex === null) return;
+
+    const updatedProducts = [...products];
+    updatedProducts[editIndex] = { ...updatedProducts[editIndex], ...editForm };
+
+    localStorage.setItem("products", JSON.stringify(updatedProducts));
+    setProducts(updatedProducts);
+
+    // Clear edit state
+    setEditIndex(null);
+    setEditForm({ name: "", stock: 0, category: "" });
+  };
+
+  const handleCancelEdit = () => {
+    setEditIndex(null);
+    setEditForm({ name: "", stock: 0, category: "" });
+  };
+
 
 
 
@@ -196,6 +262,12 @@ const handleBuyNow = (index: number) => {
         <ul className="productList">
           {products.map((prod, index) => (
             <li key={index}>
+              <input
+                type="checkbox"
+                checked={selectedItems.includes(prod.name)}
+                onChange={() => toggleSelection(prod.name)}
+              />
+
               <div
                 className="product-card"
                 style={{
@@ -207,10 +279,42 @@ const handleBuyNow = (index: number) => {
                 }}
               >
                 <span className="productImage">img</span>
+
+                {editIndex === index ? (
+                  <div>
+                    <input
+                      type="text"
+                      value={editForm.name}
+                      onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                    />
+                    <input
+                      type="number"
+                      value={editForm.stock}
+                      onChange={(e) => setEditForm({ ...editForm, stock: Number(e.target.value) })}
+                    />
+                    <input
+                      type="text"
+                      value={editForm.category}
+                      onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
+                    />
+                    <button onClick={handleSaveEdit}>Save</button>
+                    <button onClick={handleCancelEdit}>Cancel</button>
+                  </div>
+                ) : (
+                  <>
+                    <p>{prod.name}</p>
+                    <span>Stock: {prod.stock}</span>
+                    <span>Category: {prod.category}</span>
+                    <button onClick={() => handleEditProduct(index)}>Edit</button>
+                    <button onClick={() => handleDeleteProduct(prod.name)}>Delete</button>
+                  </>
+                )}
+
+
                 <p>{prod.name}</p>
 
                 <span className="productStock">Stock: {prod.stock}</span>
-                <span className="productStock">Stock: {prod.category}</span>
+                <span className="productCategory">Caterogy: {prod.category}</span>
 
                 <div style={{ display: "flex", alignItems: "center", gap: ".5rem" }}>
                   <button className="add" onClick={() => handleQuantity(index, "minus")}>
@@ -226,11 +330,24 @@ const handleBuyNow = (index: number) => {
                   <button onClick={() => handleAddCart(index)}>Add to cart</button>
                   <button onClick={() => handleBuyNow(index)}>Buy now</button>
                 </div>
+
+                <br />
+
+                <button onClick={() => handleDeleteProduct(prod.name)}>Delete</button>
+                <button onClick={() => handleEditProduct(index)}>Edit</button>
+
               </div>
             </li>
+
+            
           ))}
         </ul>
       </div>
+
+      <button onClick={handleDeleteSelected}>
+        Delete selected Product(s)
+      </button>
+
     </div>
   );
 }
