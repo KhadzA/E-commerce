@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 
 function Cart() {
   const [cart, setCart] = useState<{ name: string; quantity: number }[]>([]);
-  const [products, setProducts] = useState<{ name: string; stock: number }[]>([]);
+  const [products, setProducts] = useState<{ name: string; stock: number }[]>(
+    []
+  );
   const [selectedItems, setSelectedItems] = useState<string[]>([]); // track selected product names
 
   useEffect(() => {
@@ -49,10 +51,11 @@ function Cart() {
 
   // toggle checkbox selection
   const toggleSelection = (name: string) => {
-    setSelectedItems((prev) =>
-      prev.includes(name)
-        ? prev.filter((item) => item !== name) // remove if already selected
-        : [...prev, name] // add if not selected
+    setSelectedItems(
+      (prev) =>
+        prev.includes(name)
+          ? prev.filter((item) => item !== name) // remove if already selected
+          : [...prev, name] // add if not selected
     );
   };
 
@@ -64,8 +67,9 @@ function Cart() {
     }
 
     // Get current orders
-    const orders: { name: string; quantity: number }[] =
-      JSON.parse(localStorage.getItem("orders") || "[]");
+    const orders: { name: string; quantity: number }[] = JSON.parse(
+      localStorage.getItem("orders") || "[]"
+    );
 
     let updatedProducts = [...products];
     let updatedCart = [...cart];
@@ -98,7 +102,6 @@ function Cart() {
     alert(`Ordered: ${selectedItems.join(", ")}`);
   };
 
-
   const handleBuyNow = (index: number) => {
     const selectedProduct = {
       name: cart[index].name,
@@ -106,8 +109,9 @@ function Cart() {
     };
 
     // Get current orders
-    const orders: { name: string; quantity: number }[] =
-      JSON.parse(localStorage.getItem("orders") || "[]");
+    const orders: { name: string; quantity: number }[] = JSON.parse(
+      localStorage.getItem("orders") || "[]"
+    );
 
     // Find the product in products
     const product = products.find((p) => p.name === selectedProduct.name);
@@ -145,9 +149,6 @@ function Cart() {
     alert(`Ordered ${selectedProduct.quantity} ${selectedProduct.name}(s)`);
   };
 
-
-
-
   return (
     <div>
       <div className="cartList">
@@ -165,8 +166,12 @@ function Cart() {
               {item.name}
               <br />
               <small>Stock: {product ? product.stock : "?"}</small>
-              <div style={{ display: "flex", alignItems: "center", gap: ".5rem" }}>
-                <button onClick={() => handleQuantity(index, "minus")}>-</button>
+              <div
+                style={{ display: "flex", alignItems: "center", gap: ".5rem" }}
+              >
+                <button onClick={() => handleQuantity(index, "minus")}>
+                  -
+                </button>
                 <span className="quantity">{item.quantity}</span>
                 <button onClick={() => handleQuantity(index, "add")}>+</button>
               </div>
@@ -175,7 +180,7 @@ function Cart() {
           );
         })}
       </div>
-      
+
       <br />
 
       <button onClick={handleBuySelected} disabled={selectedItems.length === 0}>
