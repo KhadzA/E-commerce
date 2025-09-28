@@ -1,5 +1,6 @@
 import { use, useState, useEffect } from "react";
 import { useNavigate } from "react-router";
+import { handleAddProduct } from "../../../handlers/admin/adminProductHandlers";
 
 function Product() {
   const [products, setProducts] = useState<
@@ -116,41 +117,6 @@ function Product() {
     }
   };
 
-  const handleAddProduct = (name: string, stock: number, category: string) => {
-    if (!name.trim()) return;
-
-    const selectedProduct = {
-      name,
-      stock: Number(stock),
-      category,
-    };
-
-    // Get existing products from localStorage
-    const storedProducts: {
-      name: string;
-      stock: number;
-      category: string;
-    }[] = JSON.parse(localStorage.getItem("products") || "[]");
-
-    // Check if it already exists (by name only)
-    const exists = storedProducts.some((p) => p.name === selectedProduct.name);
-
-    if (!exists) {
-      storedProducts.push(selectedProduct);
-
-      // Save back to localStorage
-      localStorage.setItem("products", JSON.stringify(storedProducts));
-
-      // Update React state
-      setProducts(storedProducts);
-      setQuantity((prev) => [...prev, 1]); // start at quantity 1
-    }
-
-    // Reset inputs
-    setProduct("");
-    setStock("");
-  };
-
   // toggle selection for a product
   const toggleSelection = (name: string) => {
     setSelectedItems(
@@ -232,7 +198,7 @@ function Product() {
           value={stock}
           onChange={(e) => {
             const val = e.target.value;
-            setStock(val === "" ? "" : Number(val)); // allow empty or number
+            setStock(val === "" ? "" : Number(val));
           }}
         />
         <br />
@@ -246,7 +212,16 @@ function Product() {
 
       <button
         onClick={() =>
-          handleAddProduct(productName, Number(stock), productCategory)
+          handleAddProduct(
+            productName,
+            Number(stock),
+            productCategory,
+            setProducts,
+            setQuantity,
+            setProduct,
+            setStock,
+            setProductCategory
+          )
         }
       >
         Add Product
