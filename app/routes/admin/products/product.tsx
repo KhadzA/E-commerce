@@ -1,6 +1,9 @@
 import { use, useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { handleAddProduct } from "../../../handlers/admin/adminProductHandlers";
+import {
+  handleAddProduct,
+  handleAddCart,
+} from "../../../handlers/admin/adminProductHandlers";
 
 function Product() {
   const [products, setProducts] = useState<
@@ -46,40 +49,40 @@ function Product() {
     });
   };
 
-  const handleAddCart = (index: number) => {
-    const selectedProduct = {
-      name: products[index].name,
-      quantity: quantity[index],
-      category: products[index].category,
-    };
+  // const handleAddCart = (index: number) => {
+  //   const selectedProduct = {
+  //     name: products[index].name,
+  //     quantity: quantity[index],
+  //     category: products[index].category,
+  //   };
 
-    // Get current cart from localStorage (or empty array if none)
-    const cart: {
-      name: string;
-      quantity: number;
-      category: string;
-    }[] = JSON.parse(localStorage.getItem("cart") || "[]");
+  //   // Get current cart from localStorage (or empty array if none)
+  //   const cart: {
+  //     name: string;
+  //     quantity: number;
+  //     category: string;
+  //   }[] = JSON.parse(localStorage.getItem("cart") || "[]");
 
-    // Check if product already exists in cart
-    const existingProductIndex = cart.findIndex(
-      (item) => item.name === selectedProduct.name
-    );
+  //   // Check if product already exists in cart
+  //   const existingProductIndex = cart.findIndex(
+  //     (item) => item.name === selectedProduct.name
+  //   );
 
-    if (existingProductIndex !== -1) {
-      // If exists, update quantity
-      cart[existingProductIndex].quantity += selectedProduct.quantity;
-    } else {
-      // If not, add new product
-      cart.push(selectedProduct);
-    }
+  //   if (existingProductIndex !== -1) {
+  //     // If exists, update quantity
+  //     cart[existingProductIndex].quantity += selectedProduct.quantity;
+  //   } else {
+  //     // If not, add new product
+  //     cart.push(selectedProduct);
+  //   }
 
-    // Save back to localStorage
-    localStorage.setItem("cart", JSON.stringify(cart));
+  //   // Save back to localStorage
+  //   localStorage.setItem("cart", JSON.stringify(cart));
 
-    alert(
-      `Added ${selectedProduct.quantity} ${selectedProduct.name}(s) to cart`
-    );
-  };
+  //   alert(
+  //     `Added ${selectedProduct.quantity} ${selectedProduct.name}(s) to cart`
+  //   );
+  // };
 
   const handleBuyNow = (index: number) => {
     const selectedProduct = {
@@ -324,7 +327,9 @@ function Product() {
                 <div
                   style={{ display: "flex", alignItems: "center", gap: "1rem" }}
                 >
-                  <button onClick={() => handleAddCart(index)}>
+                  <button
+                    onClick={() => handleAddCart(index, products, quantity)}
+                  >
                     Add to cart
                   </button>
                   <button onClick={() => handleBuyNow(index)}>Buy now</button>

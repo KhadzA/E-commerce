@@ -33,3 +33,31 @@ export const handleAddProduct = (
   setStock("");
   setProductCategory("");
 };
+
+export const handleAddCart = (
+  index: number,
+  products: { name: string; category: string }[],
+  quantity: number[]
+) => {
+  const selectedProduct = {
+    name: products[index].name,
+    quantity: quantity[index],
+    category: products[index].category,
+  };
+
+  const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+  const existingProductIndex = cart.findIndex(
+    (item: any) => item.name === selectedProduct.name
+  );
+
+  if (existingProductIndex !== -1) {
+    cart[existingProductIndex].quantity += selectedProduct.quantity;
+  } else {
+    cart.push(selectedProduct);
+  }
+
+  localStorage.setItem("cart", JSON.stringify(cart));
+
+  alert(`Added ${selectedProduct.quantity} ${selectedProduct.name}(s) to cart`);
+};
