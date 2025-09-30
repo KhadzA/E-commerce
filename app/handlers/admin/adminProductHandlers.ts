@@ -59,5 +59,5 @@ export const handleAddCart = (
 
   localStorage.setItem("cart", JSON.stringify(cart));
 
-  alert(`Added ${selectedProduct.quantity} ${selectedProduct.name}(s) to cart`);
+  alert(`Added ${selectedProduct.quantity} ${selectedProduct.name} to cart`);
 };
