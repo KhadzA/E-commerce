@@ -61,3 +61,45 @@ export const handleAddCart = (
 
   alert(`Added ${selectedProduct.quantity} ${selectedProduct.name} to cart`);
 };
+
+export const handleBuyNow = (
+  index: number,
+  products: { name: string; category: string; stock: number }[],
+  quantity: number[],
+  stock: number,
+  setProducts: React.Dispatch<React.SetStateAction<any[]>>
+) => {
+  const selectedProduct = {
+    name: products[index].name,
+    quantity: quantity[index],
+    stock: products[index].stock,
+  };
+
+  // Get current orders
+  const orders: { name: string; quantity: number; stock: number }[] =
+    JSON.parse(localStorage.getItem("orders") || "[]");
+
+  if (selectedProduct.quantity) {
+    // Reduce stock
+    const updatedProducts = [...products];
+    updatedProducts[index] = {
+      ...updatedProducts[index],
+      stock: updatedProducts[index].stock - selectedProduct.quantity,
+    };
+
+    if (updatedProducts[index].stock < 0) {
+      alert(`Not enough stock for ${selectedProduct.name}`);
+      return;
+    }
+
+    // Save updated products back
+    localStorage.setItem("products", JSON.stringify(updatedProducts));
+    setProducts(updatedProducts);
+
+    // Add to orders
+    orders.push(selectedProduct);
+    localStorage.setItem("orders", JSON.stringify(orders));
+
+    alert(`Ordered ${selectedProduct.quantity} ${selectedProduct.name}(s)`);
+  }
+};

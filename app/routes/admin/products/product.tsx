@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import {
   handleAddProduct,
   handleAddCart,
+  handleBuyNow,
 } from "../../../handlers/admin/adminProductHandlers";
 
 function Product() {
@@ -47,77 +48,6 @@ function Product() {
       }
       return newQuantity;
     });
-  };
-
-  // const handleAddCart = (index: number) => {
-  //   const selectedProduct = {
-  //     name: products[index].name,
-  //     quantity: quantity[index],
-  //     category: products[index].category,
-  //   };
-
-  //   // Get current cart from localStorage (or empty array if none)
-  //   const cart: {
-  //     name: string;
-  //     quantity: number;
-  //     category: string;
-  //   }[] = JSON.parse(localStorage.getItem("cart") || "[]");
-
-  //   // Check if product already exists in cart
-  //   const existingProductIndex = cart.findIndex(
-  //     (item) => item.name === selectedProduct.name
-  //   );
-
-  //   if (existingProductIndex !== -1) {
-  //     // If exists, update quantity
-  //     cart[existingProductIndex].quantity += selectedProduct.quantity;
-  //   } else {
-  //     // If not, add new product
-  //     cart.push(selectedProduct);
-  //   }
-
-  //   // Save back to localStorage
-  //   localStorage.setItem("cart", JSON.stringify(cart));
-
-  //   alert(
-  //     `Added ${selectedProduct.quantity} ${selectedProduct.name}(s) to cart`
-  //   );
-  // };
-
-  const handleBuyNow = (index: number) => {
-    const selectedProduct = {
-      name: products[index].name,
-      quantity: quantity[index],
-    };
-
-    // Get current orders
-    const orders: { name: string; quantity: number }[] = JSON.parse(
-      localStorage.getItem("orders") || "[]"
-    );
-
-    if (selectedProduct.quantity) {
-      // Reduce stock
-      const updatedProducts = [...products];
-      updatedProducts[index] = {
-        ...updatedProducts[index],
-        stock: updatedProducts[index].stock - selectedProduct.quantity,
-      };
-
-      if (updatedProducts[index].stock < 0) {
-        alert(`Not enough stock for ${selectedProduct.name}`);
-        return;
-      }
-
-      // Save updated products back
-      localStorage.setItem("products", JSON.stringify(updatedProducts));
-      setProducts(updatedProducts);
-
-      // Add to orders
-      orders.push(selectedProduct);
-      localStorage.setItem("orders", JSON.stringify(orders));
-
-      alert(`Ordered ${selectedProduct.quantity} ${selectedProduct.name}(s)`);
-    }
   };
 
   // toggle selection for a product
@@ -332,7 +262,19 @@ function Product() {
                   >
                     Add to cart
                   </button>
-                  <button onClick={() => handleBuyNow(index)}>Buy now</button>
+                  <button
+                    onClick={() =>
+                      handleBuyNow(
+                        index,
+                        products,
+                        quantity,
+                        Number(stock),
+                        setProducts
+                      )
+                    }
+                  >
+                    Buy now
+                  </button>
                 </div>
 
                 <br />
