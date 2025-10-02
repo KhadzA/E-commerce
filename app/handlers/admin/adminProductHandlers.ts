@@ -66,7 +66,6 @@ export const handleBuyNow = (
   index: number,
   products: { name: string; category: string; stock: number }[],
   quantity: number[],
-  stock: number,
   setProducts: React.Dispatch<React.SetStateAction<any[]>>
 ) => {
   const selectedProduct = {
@@ -102,4 +101,111 @@ export const handleBuyNow = (
 
     alert(`Ordered ${selectedProduct.quantity} ${selectedProduct.name}(s)`);
   }
+};
+
+export const handleQuantity = (
+  index: number,
+  type: "add" | "minus",
+  products: { name: string; stock: number; category: string }[],
+  setQuantity: React.Dispatch<React.SetStateAction<number[]>>
+) => {
+  setQuantity((prev) => {
+    const newQuantity = [...prev];
+    if (type === "add") {
+      newQuantity[index] += 1;
+      if (newQuantity[index] > products[index].stock) {
+        newQuantity[index] = products[index].stock;
+      }
+    } else if (type === "minus" && newQuantity[index] > 1) {
+      newQuantity[index] -= 1;
+    }
+    return newQuantity;
+  });
+};
+
+export const toggleSelection = (
+  name: string,
+  setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>
+) => {
+  setSelectedItems((prev) =>
+    prev.includes(name) ? prev.filter((item) => item !== name) : [...prev, name]
+  );
+};
+
+export const handleDeleteSelected = (
+  selectedItems: string[],
+  products: { name: string; stock: number; category: string }[],
+  setProducts: React.Dispatch<React.SetStateAction<any[]>>,
+  setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>
+) => {
+  if (selectedItems.length === 0) {
+    alert("No products selected!");
+    return;
+  }
+
+  const updatedProducts = products.filter(
+    (prod) => !selectedItems.includes(prod.name)
+  );
+
+  setProducts(updatedProducts);
+  localStorage.setItem("products", JSON.stringify(updatedProducts));
+  setSelectedItems([]);
+};
+
+export const handleDeleteProduct = (
+  name: string,
+  products: { name: string; stock: number; category: string }[],
+  setProducts: React.Dispatch<React.SetStateAction<any[]>>
+) => {
+  const updatedProducts = products.filter((p) => p.name !== name);
+  localStorage.setItem("products", JSON.stringify(updatedProducts));
+  setProducts(updatedProducts);
+};
+
+export const handleEditProduct = (
+  index: number,
+  products: { name: string; stock: number; category: string }[],
+  setEditIndex: React.Dispatch<React.SetStateAction<number | null>>,
+  setEditForm: React.Dispatch<
+    React.SetStateAction<{ name: string; stock: number; category: string }>
+  >
+) => {
+  const product = products[index];
+  setEditForm({
+    name: product.name,
+    stock: product.stock,
+    category: product.category,
+  });
+  setEditIndex(index);
+};
+
+export const handleSaveEdit = (
+  editIndex: number | null,
+  editForm: { name: string; stock: number; category: string },
+  products: { name: string; stock: number; category: string }[],
+  setProducts: React.Dispatch<React.SetStateAction<any[]>>,
+  setEditIndex: React.Dispatch<React.SetStateAction<number | null>>,
+  setEditForm: React.Dispatch<
+    React.SetStateAction<{ name: string; stock: number; category: string }>
+  >
+) => {
+  if (editIndex === null) return;
+
+  const updatedProducts = [...products];
+  updatedProducts[editIndex] = { ...updatedProducts[editIndex], ...editForm };
+
+  localStorage.setItem("products", JSON.stringify(updatedProducts));
+  setProducts(updatedProducts);
+  setEditIndex(null);
+  setEditForm({ name: "", stock: 0, category: "" });
+};
+
+export const handleCancelEdit = (
+  setEditIndex: React.Dispatch<React.SetStateAction<number | null>>,
+  setEditForm: React.Dispatch<
+    React.SetStateAction<{ name: string; stock: number; category: string }>
+  >
+) => {
+  setEditIndex(null);
+  setEditForm({ name: "", stock: 0, category: "" });
 };

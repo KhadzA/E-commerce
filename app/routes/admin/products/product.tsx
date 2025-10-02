@@ -4,6 +4,13 @@ import {
   handleAddProduct,
   handleAddCart,
   handleBuyNow,
+  handleQuantity,
+  toggleSelection,
+  handleDeleteSelected,
+  handleDeleteProduct,
+  handleEditProduct,
+  handleSaveEdit,
+  handleCancelEdit,
 } from "../../../handlers/admin/adminProductHandlers";
 
 function Product() {
@@ -33,87 +40,6 @@ function Product() {
     setProducts(stored);
     setQuantity(stored.map(() => 1)); // init each product with qty = 1
   }, []);
-
-  const handleQuantity = (index: number, type: "add" | "minus") => {
-    setQuantity((prev) => {
-      const newQuantity = [...prev];
-      if (type === "add") {
-        newQuantity[index] += 1;
-
-        if (newQuantity[index] > products[index].stock) {
-          newQuantity[index] = products[index].stock; // cap at stock
-        }
-      } else if (type === "minus" && newQuantity[index] > 1) {
-        newQuantity[index] -= 1;
-      }
-      return newQuantity;
-    });
-  };
-
-  // toggle selection for a product
-  const toggleSelection = (name: string) => {
-    setSelectedItems(
-      (prev) =>
-        prev.includes(name)
-          ? prev.filter((item) => item !== name) // remove if already selected
-          : [...prev, name] // add if not selected
-    );
-  };
-
-  const handleDeleteSelected = () => {
-    if (selectedItems.length === 0) {
-      alert("No products selected!");
-      return;
-    }
-
-    const updatedProducts = products.filter(
-      (prod) => !selectedItems.includes(prod.name)
-    );
-
-    setProducts(updatedProducts);
-    localStorage.setItem("products", JSON.stringify(updatedProducts));
-    setSelectedItems([]); // clear selection
-  };
-
-  const handleDeleteProduct = (name: string) => {
-    // remove product from state
-    const updatedProducts = products.filter((p) => p.name !== name);
-
-    // update localStorage
-    localStorage.setItem("products", JSON.stringify(updatedProducts));
-
-    // update React state
-    setProducts(updatedProducts);
-  };
-
-  const handleEditProduct = (index: number) => {
-    const product = products[index];
-    setEditForm({
-      name: product.name,
-      stock: product.stock,
-      category: product.category,
-    });
-    setEditIndex(index);
-  };
-
-  const handleSaveEdit = () => {
-    if (editIndex === null) return;
-
-    const updatedProducts = [...products];
-    updatedProducts[editIndex] = { ...updatedProducts[editIndex], ...editForm };
-
-    localStorage.setItem("products", JSON.stringify(updatedProducts));
-    setProducts(updatedProducts);
-
-    // Clear edit state
-    setEditIndex(null);
-    setEditForm({ name: "", stock: 0, category: "" });
-  };
-
-  const handleCancelEdit = () => {
-    setEditIndex(null);
-    setEditForm({ name: "", stock: 0, category: "" });
-  };
 
   return (
     <div>
@@ -167,7 +93,7 @@ function Product() {
               <input
                 type="checkbox"
                 checked={selectedItems.includes(prod.name)}
-                onChange={() => toggleSelection(prod.name)}
+                onChange={() => toggleSelection(prod.name, setSelectedItems)}
               />
 
               <div
@@ -208,18 +134,50 @@ function Product() {
                         setEditForm({ ...editForm, category: e.target.value })
                       }
                     />
-                    <button onClick={handleSaveEdit}>Save</button>
-                    <button onClick={handleCancelEdit}>Cancel</button>
+                    <button
+                      onClick={() =>
+                        handleSaveEdit(
+                          editIndex,
+                          editForm,
+                          products,
+                          setProducts,
+                          setEditIndex,
+                          setEditForm
+                        )
+                      }
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={() =>
+                        handleCancelEdit(setEditIndex, setEditForm)
+                      }
+                    >
+                      Cancel
+                    </button>
                   </div>
                 ) : (
                   <>
                     <p>{prod.name}</p>
                     <span>Stock: {prod.stock}</span>
                     <span>Category: {prod.category}</span>
-                    <button onClick={() => handleEditProduct(index)}>
+                    <button
+                      onClick={() =>
+                        handleEditProduct(
+                          index,
+                          products,
+                          setEditIndex,
+                          setEditForm
+                        )
+                      }
+                    >
                       Edit
                     </button>
-                    <button onClick={() => handleDeleteProduct(prod.name)}>
+                    <button
+                      onClick={() =>
+                        handleDeleteProduct(prod.name, products, setProducts)
+                      }
+                    >
                       Delete
                     </button>
                   </>
@@ -240,15 +198,17 @@ function Product() {
                   }}
                 >
                   <button
-                    className="add"
-                    onClick={() => handleQuantity(index, "minus")}
+                    onClick={() =>
+                      handleQuantity(index, "minus", products, setQuantity)
+                    }
                   >
                     -
                   </button>
                   <span className="quantity">{quantity[index]}</span>
                   <button
-                    className="minus"
-                    onClick={() => handleQuantity(index, "add")}
+                    onClick={() =>
+                      handleQuantity(index, "add", products, setQuantity)
+                    }
                   >
                     +
                   </button>
@@ -264,13 +224,7 @@ function Product() {
                   </button>
                   <button
                     onClick={() =>
-                      handleBuyNow(
-                        index,
-                        products,
-                        quantity,
-                        Number(stock),
-                        setProducts
-                      )
+                      handleBuyNow(index, products, quantity, setProducts)
                     }
                   >
                     Buy now
@@ -279,17 +233,44 @@ function Product() {
 
                 <br />
 
-                <button onClick={() => handleDeleteProduct(prod.name)}>
+                <button
+                  onClick={() =>
+                    handleDeleteProduct(prod.name, products, setProducts)
+                  }
+                >
                   Delete
                 </button>
-                <button onClick={() => handleEditProduct(index)}>Edit</button>
+
+                <button
+                  onClick={() =>
+                    handleEditProduct(
+                      index,
+                      products,
+                      setEditIndex,
+                      setEditForm
+                    )
+                  }
+                >
+                  Edit
+                </button>
               </div>
             </li>
           ))}
         </ul>
       </div>
 
-      <button onClick={handleDeleteSelected}>Delete selected Product(s)</button>
+      <button
+        onClick={() =>
+          handleDeleteSelected(
+            selectedItems,
+            products,
+            setProducts,
+            setSelectedItems
+          )
+        }
+      >
+        Delete selected Product(s)
+      </button>
     </div>
   );
 }
