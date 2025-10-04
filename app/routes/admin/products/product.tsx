@@ -265,7 +265,7 @@ function Product() {
             selectedItems,
             products,
             setProducts,
-            setSelectedItems
+            setSelectedItems,
           )
         }
       >
