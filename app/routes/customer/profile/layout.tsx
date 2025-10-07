@@ -12,17 +12,17 @@ import {
   LogOut,
 } from "lucide-react";
 
-function OrdersLayout({ children }: { children: React.ReactNode }) {
+function ProfileLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const NavPages = [
-    { name: "Home", path: "/admin/home", icon: Home },
-    { name: "Products", path: "/admin/products", icon: Package },
-    { name: "Orders", path: "/admin/orders", icon: ReceiptText },
-    { name: "Cart", path: "/admin/cart", icon: ShoppingCart },
-    { name: "Profile", path: "/admin/profile", icon: User },
+    { name: "Home", path: "/customer/home", icon: Home },
+    { name: "Products", path: "/customer/products", icon: Package },
+    { name: "Orders", path: "/customer/orders", icon: ReceiptText },
+    { name: "Cart", path: "/customer/cart", icon: ShoppingCart },
+    { name: "Profile", path: "/customer/profile", icon: User },
   ];
 
   const handleNavigation = (path: string) => {
@@ -155,4 +155,4 @@ function OrdersLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default OrdersLayout;
+export default ProfileLayout;

@@ -18,11 +18,11 @@ function ProductLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const NavPages = [
-    { name: "Home", path: "/home", icon: Home },
-    { name: "Products", path: "/products", icon: Package },
-    { name: "Orders", path: "/orders", icon: ReceiptText },
-    { name: "Cart", path: "/cart", icon: ShoppingCart },
-    { name: "Profile", path: "/profile", icon: User },
+    { name: "Home", path: "/admin/home", icon: Home },
+    { name: "Products", path: "/admin/products", icon: Package },
+    { name: "Orders", path: "/admin/orders", icon: ReceiptText },
+    { name: "Cart", path: "/admin/cart", icon: ShoppingCart },
+    { name: "Profile", path: "/admin/profile", icon: User },
   ];
 
   const handleNavigation = (path: string) => {

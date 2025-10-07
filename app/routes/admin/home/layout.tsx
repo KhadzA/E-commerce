@@ -1,36 +1,45 @@
-import type React from "react"
-import { useState } from "react"
-import { useNavigate, useLocation, Outlet } from "react-router"
-import { Menu, X, Home, Package, ShoppingCart, User, ReceiptText, LogOut } from "lucide-react"
+import type React from "react";
+import { useState } from "react";
+import { useNavigate, useLocation, Outlet } from "react-router";
+import {
+  Menu,
+  X,
+  Home,
+  Package,
+  ShoppingCart,
+  User,
+  ReceiptText,
+  LogOut,
+} from "lucide-react";
 
 function HomeLayout({ children }: { children: React.ReactNode }) {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const NavPages = [
-    { name: "Home", path: "/home", icon: Home },
-    { name: "Products", path: "/products", icon: Package },
-    { name: "Orders", path: "/orders", icon: ReceiptText },
-    { name: "Cart", path: "/cart", icon: ShoppingCart },
-    { name: "Profile", path: "/profile", icon: User },
-  ]
+    { name: "Home", path: "/admin/home", icon: Home },
+    { name: "Products", path: "/admin/products", icon: Package },
+    { name: "Orders", path: "/admin/orders", icon: ReceiptText },
+    { name: "Cart", path: "/admin/cart", icon: ShoppingCart },
+    { name: "Profile", path: "/admin/profile", icon: User },
+  ];
 
   const handleNavigation = (path: string) => {
-    navigate(path)
-    setSidebarOpen(false)
-  }
+    navigate(path);
+    setSidebarOpen(false);
+  };
 
   const handleLogout = () => {
     if (true) {
-      navigate("/login?logout_success=true")
-      return
+      navigate("/login?logout_success=true");
+      return;
     }
-  }
+  };
 
   const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen)
-  }
+    setSidebarOpen(!sidebarOpen);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -53,11 +62,15 @@ function HomeLayout({ children }: { children: React.ReactNode }) {
 
             {/* Logo */}
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">L</span>
+              <span className="text-primary-foreground font-bold text-sm">
+                L
+              </span>
             </div>
 
             {/* Website Name */}
-            <h1 className="text-xl font-semibold text-foreground">Your Website</h1>
+            <h1 className="text-xl font-semibold text-foreground">
+              Your Website
+            </h1>
           </div>
         </div>
       </header>
@@ -72,8 +85,8 @@ function HomeLayout({ children }: { children: React.ReactNode }) {
           {/* Main Navigation */}
           <nav className="p-2 space-y-2 flex-1">
             {NavPages.map((page) => {
-              const IconComponent = page.icon
-              const isActive = location.pathname === page.path
+              const IconComponent = page.icon;
+              const isActive = location.pathname === page.path;
               return (
                 <button
                   key={page.name}
@@ -86,15 +99,19 @@ function HomeLayout({ children }: { children: React.ReactNode }) {
                   title={!sidebarOpen ? page.name : undefined}
                 >
                   <div className="flex items-center justify-center w-6 h-6 flex-none">
-                    <IconComponent className={`h-5 w-5 ${isActive ? "text-white" : ""}`} />
+                    <IconComponent
+                      className={`h-5 w-5 ${isActive ? "text-white" : ""}`}
+                    />
                   </div>
                   {sidebarOpen && (
-                    <span className={`ml-3 whitespace-nowrap font-medium ${isActive ? "text-white" : ""}`}>
+                    <span
+                      className={`ml-3 whitespace-nowrap font-medium ${isActive ? "text-white" : ""}`}
+                    >
                       {page.name}
                     </span>
                   )}
                 </button>
-              )
+              );
             })}
           </nav>
 
@@ -108,7 +125,11 @@ function HomeLayout({ children }: { children: React.ReactNode }) {
               <div className="flex items-center justify-center w-6 h-6 flex-shrink-0">
                 <LogOut className="h-5 w-5 text-destructive" />
               </div>
-              {sidebarOpen && <span className="ml-3 whitespace-nowrap text-destructive font-medium">Logout</span>}
+              {sidebarOpen && (
+                <span className="ml-3 whitespace-nowrap text-destructive font-medium">
+                  Logout
+                </span>
+              )}
             </button>
           </div>
         </div>
@@ -125,10 +146,13 @@ function HomeLayout({ children }: { children: React.ReactNode }) {
 
       {/* Mobile Overlay */}
       {sidebarOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden" onClick={() => setSidebarOpen(false)} />
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
       )}
     </div>
-  )
+  );
 }
 
-export default HomeLayout
+export default HomeLayout;
