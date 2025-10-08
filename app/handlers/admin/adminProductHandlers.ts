@@ -209,3 +209,25 @@ export const handleCancelEdit = (
   setEditIndex(null);
   setEditForm({ name: "", stock: 0, category: "" });
 };
+
+export const handleSearchProduct = (
+  searchTerm: string,
+  products: { name: string; stock: number; category: string }[],
+  setFilteredProducts: React.Dispatch<
+    React.SetStateAction<{ name: string; stock: number; category: string }[]>
+  >
+) => {
+  const lower = searchTerm.toLowerCase().trim();
+
+  if (lower === "") {
+    // If empty, show all products
+    setFilteredProducts(products);
+  } else {
+    const filtered = products.filter(
+      (p) =>
+        p.name.toLowerCase().includes(lower) ||
+        p.category.toLowerCase().includes(lower)
+    );
+    setFilteredProducts(filtered);
+  }
+};

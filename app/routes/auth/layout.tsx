@@ -1,80 +1,60 @@
+import { LogIn, UserPlus } from "lucide-react";
+import { Link } from "react-router";
+
 export function AuthLayout() {
   return (
-    <main className="flex items-center justify-center pt-16 pb-4">
-      <div className="flex-1 flex flex-col items-center gap-16 min-h-0">
-        <header className="flex flex-col items-center gap-9">
-          <div className="w-[500px] max-w-[100vw] p-4">
-            {/* <img
-              src={logo}
-              alt="LightLogo"
-              className="block w-full dark:hidden"
-            />
-            <img
-              src={logo}
-              alt="DarkLogo"
-              className="hidden w-full dark:block"
-            /> */}
+    <main className="min-h-screen bg-gradient-to-br from-background via-background to-muted flex items-center justify-center p-4">
+      <div className="w-full max-w-md space-y-8">
+        <header className="text-center space-y-4">
+          <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto">
+            <span className="text-3xl font-bold text-primary">L</span>
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">Your Website</h1>
+            <p className="text-muted-foreground mt-2">
+              Welcome back! Please choose an option below
+            </p>
           </div>
         </header>
-        <div className="max-w-[300px] w-full space-y-6 px-4">
-          <nav className="rounded-3xl border border-gray-200 p-6 dark:border-gray-700 space-y-4">
-            <p className="leading-6 text-black dark:text-black text-center">
-              WELCOME
-            </p>
-            <ul>
-              {resources.map(({ href, text, icon }) => (
-                <li key={href}>
-                  <a
-                    className="group flex items-center gap-3 self-stretch p-3 leading-normal text-blue-700 hover:underline dark:text-blue-500"
-                    href={href}
-                    // target="_blank"
-                    rel="noreferrer"
-                  >
-                    {icon}
-                    {text}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
+
+        <div className="space-y-4">
+          <Link to="./login" className="block group">
+            <div className="bg-card border border-border rounded-xl p-6 hover:shadow-lg hover:border-primary/50 transition-all duration-200">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                  <LogIn className="w-6 h-6 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
+                    Login
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Access your account
+                  </p>
+                </div>
+              </div>
+            </div>
+          </Link>
+
+          <Link to="./register" className="block group">
+            <div className="bg-card border border-border rounded-xl p-6 hover:shadow-lg hover:border-primary/50 transition-all duration-200">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                  <UserPlus className="w-6 h-6 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
+                    Register
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Create a new account
+                  </p>
+                </div>
+              </div>
+            </div>
+          </Link>
         </div>
       </div>
     </main>
   );
 }
-
-const resources = [
-  {
-    href: "./login",
-    text: "Login",
-    icon: (
-    <svg 
-        xmlns="http://www.w3.org/2000/svg" 
-        fill="none" 
-        viewBox="0 0 24 24" 
-        strokeWidth={1.5} 
-        stroke="currentColor" 
-        className="w-6 h-6"
-    >
-        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6A2.25 2.25 0 005.25 5.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l3 3m0 0l-3 3m3-3H3" />
-    </svg>
-
-    ),
-  },
-  {
-    href: "./register",
-    text: "Register",
-    icon: (
-    <svg 
-        xmlns="http://www.w3.org/2000/svg" 
-        fill="none" 
-        viewBox="0 0 24 24" 
-        strokeWidth={1.5} 
-        stroke="currentColor" 
-        className="w-6 h-6"
-    >
-        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6.75a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.25a8.25 8.25 0 0115 0M18 9.75v6m3-3h-6" />
-    </svg>
-    ),
-  },
-];

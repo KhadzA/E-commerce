@@ -12,6 +12,7 @@ import {
   handleEditProduct,
   handleSaveEdit,
   handleCancelEdit,
+  handleSearchProduct,
 } from "../../../handlers/admin/adminProductHandlers";
 import {
   Plus,
@@ -22,6 +23,7 @@ import {
   Save,
   X,
   Package,
+  Search,
 } from "lucide-react";
 
 function Product() {
@@ -44,6 +46,8 @@ function Product() {
     category: "",
   });
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredProducts, setFilteredProducts] = useState(products);
 
   // Load products from localStorage on mount
   useEffect(() => {
@@ -51,6 +55,10 @@ function Product() {
     setProducts(stored);
     setQuantity(stored.map(() => 1)); // init each product with qty = 1
   }, []);
+
+  useEffect(() => {
+    setFilteredProducts(products);
+  }, [products]);
 
   return (
     <div className="mt-5 p-6 max-w-7xl mx-auto">
@@ -120,6 +128,23 @@ function Product() {
         </button>
       </div>
 
+      <div className="bg-card border border-border rounded-lg p-4 mb-6 shadow-sm">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder="Search by name or category..."
+            value={searchTerm}
+            onChange={(e) => {
+              const value = e.target.value;
+              setSearchTerm(value);
+              handleSearchProduct(value, products, setFilteredProducts);
+            }}
+            className="w-full pl-10 pr-4 py-3 bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring text-foreground placeholder:text-muted-foreground"
+          />
+        </div>
+      </div>
+
       {selectedItems.length > 0 && (
         <div className="mb-4 flex justify-end">
           <button
@@ -140,7 +165,7 @@ function Product() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {products.map((prod, index) => (
+        {filteredProducts.map((prod, index) => (
           <div
             key={index}
             className="bg-card border border-border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
