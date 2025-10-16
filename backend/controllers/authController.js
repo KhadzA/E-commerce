@@ -38,5 +38,5 @@ export const userLogout = (req, res) => {
   const userEmail = loggedInUser.email;
   loggedInUser = null;
 
-  res.json({ message: `${userEmail} has been logged out.` });
+  res.json({ message: `${userEmail} has been logged out` });
 };
