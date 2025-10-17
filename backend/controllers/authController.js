@@ -1,4 +1,4 @@
-let users = []; // temporary in-memory "database"
+let users = []; // temporary "database"
 let loggedInUser = null; // temporary login state
 
 export const userRegister = (req, res) => {
