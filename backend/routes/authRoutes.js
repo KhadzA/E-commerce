@@ -7,8 +7,8 @@ import {
 
 const router = express.Router();
 
-router.get("/login", userLogin); //I might need ID logics here later
-router.get("/register", userRegister); //I might need ID logics here later
-router.get("/logout", userLogout); //I might need ID logics here later
+router.post("/login", userLogin); //I might need ID logics here later
+router.post("/register", userRegister); //I might need ID logics here later
+router.post("/logout", userLogout); //I might need ID logics here later
 
 export default router;
