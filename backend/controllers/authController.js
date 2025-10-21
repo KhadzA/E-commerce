@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 
-const filePath = path.resolve("temporary.txt");
+const filePath = path.resolve("usersTemp.txt");
 let loggedInUser = null;
 
 // Helper: read all users from file
