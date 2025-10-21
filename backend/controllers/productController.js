@@ -3,7 +3,7 @@ let products = [
   { id: 1, name: "Laptop", price: 999, stock: 5 },
   { id: 2, name: "Phone", price: 499, stock: 10 },
   { id: 3, name: "Headphones", price: 199, stock: 15 },
-];
+]; //Might be replaced with file-based or real database storage later
 
 // Get all products
 export const getProducts = (req, res) => {
