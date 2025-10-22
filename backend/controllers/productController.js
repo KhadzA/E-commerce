@@ -10,7 +10,7 @@ export const getProducts = (req, res) => {
   res.json(products);
 };
 
-// Get a single product by ID
+// Get a product by ID
 export const getProductById = (req, res) => {
   const { id } = req.params;
   const product = products.find((p) => p.id === parseInt(id));
