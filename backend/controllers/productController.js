@@ -3,7 +3,7 @@ import path from "path";
 
 const filePath = path.resolve("productsTemp.txt");
 
-// Utility — read all products from file
+//  read all products from file
 const readProductsFromFile = () => {
   if (!fs.existsSync(filePath)) return [];
   const data = fs.readFileSync(filePath, "utf8");
