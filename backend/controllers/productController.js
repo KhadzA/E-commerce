@@ -26,7 +26,7 @@ const readProductsFromFile = () => {
     });
 };
 
-// Utility — write all products to file (overwrite)
+// write all products to file (overwrite)
 const writeProductsToFile = (products) => {
   const data = products
     .map(
