@@ -38,7 +38,7 @@ const writeProductsToFile = (products) => {
   fs.writeFileSync(filePath, data + "\n", "utf8");
 };
 
-//GET all products
+// GET all products
 export const getProducts = (req, res) => {
   const products = readProductsFromFile();
   res.json(products);
