@@ -3,7 +3,7 @@ import path from "path";
 
 const filePath = path.resolve("cartTemp.txt");
 
-//  Read carts from file
+// Read carts from file
 const readCartsFromFile = () => {
   if (!fs.existsSync(filePath)) return [];
   const data = fs.readFileSync(filePath, "utf8");
@@ -36,7 +36,7 @@ const writeCartsToFile = (carts) => {
   fs.writeFileSync(filePath, data + "\n", "utf8");
 };
 
-//  Get cart for user
+//  Get cart for users
 export const getCart = (req, res) => {
   const { userId } = req.params;
   const carts = readCartsFromFile();
@@ -92,7 +92,7 @@ export const updateCartItem = (req, res) => {
   res.json({ message: "Cart item updated.", item });
 };
 
-//  Remove a single product
+// Remove a single product
 export const removeFromCart = (req, res) => {
   const { userId, productId } = req.params;
 
@@ -110,7 +110,7 @@ export const removeFromCart = (req, res) => {
   res.json({ message: "Item removed from cart.", removed });
 };
 
-//  Clear the entire cart
+// Clear the entire cart
 export const clearCart = (req, res) => {
   const { userId } = req.params;
   let carts = readCartsFromFile();
