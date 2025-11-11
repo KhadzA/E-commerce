@@ -36,7 +36,7 @@ const writeCartsToFile = (carts) => {
   fs.writeFileSync(filePath, data + "\n", "utf8");
 };
 
-//  Get cart for user
+//  Get cart for users
 export const getCart = (req, res) => {
   const { userId } = req.params;
   const carts = readCartsFromFile();
@@ -45,7 +45,7 @@ export const getCart = (req, res) => {
   res.json(userCart);
 };
 
-//  Add product to carts
+//  Add product to cart
 export const addToCart = (req, res) => {
   const { userId } = req.params;
   const { productId, quantity } = req.body;
