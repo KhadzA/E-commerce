@@ -45,7 +45,7 @@ export const getCart = (req, res) => {
   res.json(userCart);
 };
 
-//  Add a product to carts
+//  Add a product to cart
 export const addToCart = (req, res) => {
   const { userId } = req.params;
   const { productId, quantity } = req.body;
