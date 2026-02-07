@@ -3,6 +3,36 @@ import path from "path";
 
 const filePath = path.resolve("ordersTemp.txt");
 
+// Create new order
+export const createOrder = (req, res) => {
+  const { userId, totalItems, totalQuantity } = req.body;
+
+  if (!userId || !totalItems || !totalQuantity) {
+    return res.status(400).json({ message: "Missing order data." });
+  }
+
+  const orders = readOrdersFromFile();
+  const nextOrderId =
+    orders.length > 0 ? orders[orders.length - 1].orderId + 1 : 1;
+
+  const newOrder = {
+    orderId: nextOrderId,
+    userId,
+    totalItems,
+    totalQuantity,
+    status: "PLACED",
+  };
+
+  const line = `orderId:${newOrder.orderId} userId:${newOrder.userId} totalItems:${newOrder.totalItems} totalQuantity:${newOrder.totalQuantity} status:${newOrder.status}\n`;
+
+  fs.appendFileSync(filePath, line, "utf8");
+
+  res.status(201).json({
+    message: "Order placed successfully.",
+    order: newOrder,
+  });
+};
+
 // Read orders from file
 const readOrdersFromFile = () => {
   if (!fs.existsSync(filePath)) return [];

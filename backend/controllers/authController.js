@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 
 const filePath = path.resolve("usersTemp.txt");
+const profileFilePath = path.resolve("profileTemp.txt");
 let loggedInUser = null;
 
 // Helper: read all users from file
@@ -12,9 +13,12 @@ const readUsersFromFile = () => {
     .split("\n")
     .filter((line) => line.trim() !== "")
     .map((line) => {
+      const idMatch = line.match(/userId:(\d+)/);
       const emailMatch = line.match(/userEmail:(\S+)/);
       const passMatch = line.match(/userPassword:(\S+)/);
+
       return {
+        id: idMatch ? parseInt(idMatch[1]) : 0,
         email: emailMatch ? emailMatch[1] : "",
         password: passMatch ? passMatch[1] : "",
       };
@@ -22,24 +26,43 @@ const readUsersFromFile = () => {
 };
 
 // Helper: append a new user to file
-const addUserToFile = (email, password) => {
-  const line = `userEmail:${email} userPassword:${password}\n`;
+const addUserToFile = (id, email, password) => {
+  const line = `userId:${id} userEmail:${email} userPassword:${password}\n`;
   fs.appendFileSync(filePath, line);
+};
+
+// Helper: add profile to file
+const addProfileToFile = (userId, email) => {
+  const line = `userId:${userId} email:${email} name: phone: address:\n`;
+  fs.appendFileSync(profileFilePath, line);
 };
 
 // Register user
 export const userRegister = (req, res) => {
   const { email, password } = req.body;
+
   if (!email || !password)
     return res.status(400).json({ message: "Email and password required." });
 
   const users = readUsersFromFile();
   const existingUser = users.find((u) => u.email === email);
+
   if (existingUser)
     return res.status(400).json({ message: "User already exists." });
 
-  addUserToFile(email, password);
-  res.status(201).json({ message: "User registered successfully." });
+  // Generate new userId
+  const newUserId = users.length > 0 ? users[users.length - 1].id + 1 : 1;
+
+  // Save user
+  addUserToFile(newUserId, email, password);
+
+  // Auto-create profile
+  addProfileToFile(newUserId, email);
+
+  res.status(201).json({
+    message: "User registered successfully.",
+    userId: newUserId,
+  });
 };
 
 // Login user

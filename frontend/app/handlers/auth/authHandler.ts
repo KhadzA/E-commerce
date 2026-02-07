@@ -1,4 +1,4 @@
-export const handleLogin = ({
+export const handleLogin = async ({
   email,
   password,
   setIsLoading,
@@ -8,7 +8,7 @@ export const handleLogin = ({
   password: string;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   navigate: (path: string) => void;
-}): void => {
+}): Promise<void> => {
   if (!email || !password) {
     alert("Please fill in both email and password.");
     return;
@@ -16,31 +16,52 @@ export const handleLogin = ({
 
   setIsLoading(true);
 
-  setTimeout(() => {
-    if (email === "admin@gmail.com") {
-      navigate("/admin/home?login_success=true");
-    } else if (email === "user@gmail.com") {
-      navigate("/customer/home?login_success=true");
-    } else {
-      alert("Invalid credentials.");
+  try {
+    const res = await fetch("http://localhost:5000/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.message || "Login failed.");
+      return;
     }
 
+    // Store userId (temporary auth)
+    localStorage.setItem("userId", data.user.id);
+    localStorage.setItem("userEmail", data.user.email);
+
+    // Simple role logic (optional)
+    if (data.user.email === "admin@gmail.com") {
+      navigate("/admin/home");
+    } else {
+      navigate("/customer/home");
+    }
+  } catch (error) {
+    console.error(error);
+    alert("Server error. Please try again.");
+  } finally {
     setIsLoading(false);
-  }, 500);
+  }
 };
 
 // TypeScript inline-typed params, navigate optional
-export const handleRegister = ({
+export const handleRegister = async ({
   email,
   password,
   setIsLoading,
-  navigate, // optional
+  navigate,
 }: {
   email: string;
   password: string;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   navigate?: (path: string) => void;
-}): void => {
+}): Promise<void> => {
   if (!email || !password) {
     alert("Please fill in all fields.");
     return;
@@ -48,16 +69,30 @@ export const handleRegister = ({
 
   setIsLoading(true);
 
-  // Simulate registration (replace with real API later)
-  setTimeout(() => {
-    console.log("Email:", email);
-    console.log("Password:", password);
-    alert("Registration successful!");
-    setIsLoading(false);
+  try {
+    const res = await fetch("http://localhost:5000/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
 
-    // If a navigate function was provided, redirect to login (or anywhere)
-    if (typeof navigate === "function") {
-      navigate("/login?registered=true");
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.message || "Registration failed.");
+      return;
     }
-  }, 500);
+
+    alert("Registration successful!");
+
+    // Optional: auto-redirect to login
+    navigate?.("/login?registered=true");
+  } catch (error) {
+    console.error(error);
+    alert("Server error. Please try again.");
+  } finally {
+    setIsLoading(false);
+  }
 };
