@@ -17,7 +17,7 @@ export const handleBuyNow = async (
       method: "DELETE",
     });
 
-    const res = await fetch(`${API_BASE}/cart/${userId}`); //YOU MIGHT WANNA PUT THE PATH HERE AS THE SPECIFIED PATH IN THE cartController.js IN THE BACKEND ‼️‼️‼️‼️‼️
+    const res = await fetch(`${API_BASE}/cart/${userId}`); //YOU MIGHT WANNA PUT THE PATH HERE AS THE SPECIFIED PATH IN THE cartController.js IN THE BACKEND ‼️‼️‼️‼️‼
     const updatedCart = await res.json();
     setCart(updatedCart);
 
