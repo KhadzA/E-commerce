@@ -1,1 +1,2 @@
-productId:1 productName:Test productPrice:11 productStock:8 productCategory:Testing
+productId:1 productName:Laptop productPrice:11 productStock:48 productCategory:Tech
+productId:2 productName:Lipstick productPrice:10 productStock:0 productCategory:Cosmetic

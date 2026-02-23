@@ -1,2 +1,2 @@
-userId:1 email:test@test.com name:John phone:123456789 address:Manila
-userId:1 email:alimun@gmail.com name: phone: address:
+userId:1 email:admin@gmail.com name:admin phone: address: role:admin
+userId:2 email:customer@gmail.com name:Customer phone: address: role:customer

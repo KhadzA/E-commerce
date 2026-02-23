@@ -1,134 +1,119 @@
-# Simple E-Commerce Frontend (WIP)
+# Simple E-Commerce App
 
-This is just the **frontend** of a simple e-commerce project I started out of boredom.
-There’s no real backend yet, and most of the data handling is done using **local storage** as a temporary solution.
-Eventually, I plan to build a proper backend for this, but for now it’s mainly a UI prototype.
+A simple full-stack e-commerce project I built as a beginner to practice both frontend and backend development. Nothing fancy — no real database, no fancy frameworks. Just me trying to figure things out.
 
 ---
 
-## Project Structure and Pages
+## What This Is
 
-The app uses a layout and routing structure similar to React Router.
-Here’s the current routing setup:
-
-```ts
-(index("./routes/main.tsx"),
-  // route("about", "./routes/about.tsx"),
-
-  layout("./routes/auth/layout.tsx", [
-    route("login", "./routes/auth/login.tsx"),
-    route("register", "./routes/auth/register.tsx"),
-  ]),
-  layout("./routes/authGuard.tsx", [
-    // ADMIN
-    layout("./routes/admin/home/layout.tsx", [
-      route("admin/home", "./routes/admin/home/home.tsx"),
-    ]),
-    layout("./routes/admin/products/layout.tsx", [
-      route("admin/products", "./routes/admin/products/product.tsx"),
-    ]),
-    layout("./routes/admin/orders/layout.tsx", [
-      route("admin/orders", "./routes/admin/orders/orders.tsx"),
-    ]),
-    layout("./routes/admin/cart/layout.tsx", [
-      route("admin/cart", "./routes/admin/cart/cart.tsx"),
-    ]),
-    layout("./routes/admin/profile/layout.tsx", [
-      route("admin/profile", "./routes/admin/profile/profile.tsx"),
-    ]),
-
-    // CUSTOMER/USER
-    layout("./routes/customer/home/layout.tsx", [
-      route("customer/home", "./routes/customer/home/home.tsx"),
-    ]),
-    layout("./routes/customer/products/layout.tsx", [
-      route("customer/products", "./routes/customer/products/product.tsx"),
-    ]),
-    layout("./routes/customer/orders/layout.tsx", [
-      route("customer/orders", "./routes/customer/orders/orders.tsx"),
-    ]),
-    layout("./routes/customer/cart/layout.tsx", [
-      route("customer/cart", "./routes/customer/cart/cart.tsx"),
-    ]),
-    layout("./routes/customer/profile/layout.tsx", [
-      route("customer/profile", "./routes/customer/profile/profile.tsx"),
-    ]),
-  ]));
-```
-
-### Pages Overview
-
-- **Main (/**)\*\* – Landing page
-- **Auth** – Login and Register pages (dummy only, no real backend)
-- **Admin**
-  - Home
-  - Products
-  - Orders
-  - Cart
-  - Profile (empty for now)
-
-- **Customer/User**
-  - Home
-  - Products
-  - Orders
-  - Cart
-  - Profile (empty for now)
+This is a basic e-commerce app with an **admin** side and a **customer** side. It has a real frontend and a real backend talking to each other, but instead of a database, all data is stored in plain `.txt` files on the server. I know that's not how real apps work, but it was a good way to learn how data flows between a frontend and a backend without having to deal with setting up a database.
 
 ---
 
-## How Data Works
+## Tech Stack
 
-Right now, everything is stored in **local storage**. There’s no actual database or API involved.
-This includes products, cart items, and orders.
+**Frontend**
 
-There’s also no real authentication. You can just navigate directly to:
+- React + TypeScript
+- React Router v7
+- Tailwind CSS
+- Recharts (for the admin dashboard charts)
 
-- `http://localhost:5173/admin/home`
-- `http://localhost:5173/customer/home`
+**Backend**
 
-to access the dashboards.
-
-If you want to use the login page, there are two dummy accounts:
-
-| Role  | Email                                     |
-| ----- | ----------------------------------------- |
-| Admin | [admin@gmail.com](mailto:admin@gmail.com) |
-| User  | [user@gmail.com](mailto:user@gmail.com)   |
-
-There are no passwords, this is just for simulating the flow.
+- Node.js + Express
+- Plain `.txt` files as makeshift storage (`usersTemp.txt`, `productsTemp.txt`, `ordersTemp.txt`, `cartTemp.txt`, `profileTemp.txt`)
 
 ---
 
 ## Features
 
-- Basic product management for admin (add, edit, delete, search)
-- Cart and quick buy functionality for both admin and customers
-- Simple search system for products
-- Basic recommended product section (randomized)
-- Some logic has been separated into handler files to keep things more organized (e.g. `adminProductHandlers.ts`, `adminHomeHandlers.ts`)
+### Admin
+
+- Dashboard with sales stats, charts, top products, top categories, top users, and best sales day
+- Product management — add, edit, delete, search, bulk delete
+- Order history — all orders across all users
+- Cart and quick buy
+- Profile page
+
+### Customer
+
+- Personalized home page with product recommendations, cart summary, and recent orders
+- Product browsing with add to cart and buy now
+- Order history — only their own orders
+- Cart management
+- Profile page with editable name, phone, and address
+
+### Auth
+
+- Register with name, email, and password
+- Login with role-based routing — admins go to the admin dashboard, customers go to the customer home
+- Roles are stored in the profile file; new registrations are always `customer` by default
 
 ---
 
-## Design Notes
+## Project Structure
 
-The design is very simple and mostly recycled. I’m not great at frontend design, so this is mostly functional rather than pretty.
-Styling is minimal and straightforward.
+```
+├── app/
+│   ├── routes/
+│   │   ├── auth/           # Login, Register
+│   │   ├── admin/          # Admin pages (home, products, orders, cart, profile)
+│   │   └── customer/       # Customer pages (home, products, orders, cart, profile)
+│   └── handlers/
+│       ├── auth/           # Auth logic
+│       ├── admin/          # Admin handlers (products, cart, orders, home)
+│       └── customer/       # Customer handlers
+│
+└── server/
+    ├── controllers/        # Business logic per feature
+    ├── routes/             # Express route definitions
+    ├── middleware/
+    └── *.txt               # Flat file "database"
+```
 
 ---
 
-## Future Plans
+## Running Locally
 
-- Proper authentication and backend integration
-- Real route protection
-- Profile pages (they’re currently empty, waiting for real authentication)
-- Backend development (still deciding what stack to use)
-- Improved UI and user experience
+**Backend**
+
+```bash
+cd server
+npm install
+node server.js
+```
+
+Runs on `http://localhost:5000`
+
+**Frontend**
+
+```bash
+npm install
+npm run dev
+```
+
+Runs on `http://localhost:5173`
 
 ---
 
-## Final Notes
+## Notes
 
-This is just a frontend project meant for experimenting and practicing.
-You can run it locally and explore it easily without setting up any backend.
+- This is a learning project. The `.txt` file storage is intentional as a stepping stone — I wanted to understand how a backend works before jumping into SQL or MongoDB.
+- There's no password hashing. Passwords are stored as plain text. Please don't use real passwords if you're testing this.
+- Role management is manual — to make someone an admin, edit their line in `profileTemp.txt` and change `role:customer` to `role:admin`.
+- I'm still a beginner so the code isn't perfect, but I tried to keep things organized by separating logic into handler files.
 
-I didn’t include screenshots because the project is simple enough to explore by running it yourself, apologies and thank you.
+---
+
+## What I Learned
+
+- How a frontend and backend communicate through a REST API
+- How to structure routes, controllers, and handlers
+- How state flows through a React app
+- How role-based routing works
+- That flat files are not a database, but they taught me why databases exist
+
+---
+
+_Built from scratch as a personal learning project. Thanks for checking it out._

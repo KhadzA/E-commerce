@@ -1,38 +1,35 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  Package,
-  Calendar,
-  PhilippinePeso,
-  CheckCircle,
-  Clock,
-  XCircle,
-} from "lucide-react";
-import { fetchOrders } from "../../../handlers/admin/adminOrderHandlers";
-
-interface OrderItem {
-  name: string;
-  quantity: number;
-  price: number;
-}
+import { Package, Calendar, CheckCircle, Clock, XCircle } from "lucide-react";
+import { fetchUserOrders } from "../../../handlers/admin/adminOrderHandlers";
 
 interface Order {
   orderId: number;
   userId: string;
+  productId: number;
+  productName: string;
+  productPrice: number;
   totalItems: number;
   totalQuantity: number;
+  totalPrice: number;
   status: string;
+  date: string;
 }
 
-function Orders() {
+function CustomerOrders() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const userId =
+    typeof window !== "undefined" ? localStorage.getItem("userId") : null;
+
   useEffect(() => {
+    if (!userId) return;
+
     const loadOrders = async () => {
       try {
-        const data = await fetchOrders();
+        const data = await fetchUserOrders(userId);
         setOrders(data.orders);
       } catch (err) {
         console.error(err);
@@ -43,7 +40,7 @@ function Orders() {
     };
 
     loadOrders();
-  }, []);
+  }, [userId]);
 
   const getStatusStyle = (status: string) => {
     switch (status.toUpperCase()) {
@@ -73,24 +70,16 @@ function Orders() {
     }
   };
 
-  const formatDate = () => {
-    // Orders backend does not store date, so just use "now" as placeholder
-    return new Date().toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
-
-  if (loading) return <p>Loading orders...</p>;
+  if (loading)
+    return <p className="p-6 text-muted-foreground">Loading orders...</p>;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Orders</h1>
+          <h1 className="text-3xl font-bold text-foreground">My Orders</h1>
           <p className="text-muted-foreground mt-1">
-            View and manage your order history
+            Your personal order history
           </p>
         </div>
         <div className="text-sm text-muted-foreground">
@@ -116,6 +105,7 @@ function Orders() {
               key={order.orderId}
               className="bg-card rounded-lg border border-border p-6 hover:shadow-md transition-shadow"
             >
+              {/* ── Header ── */}
               <div className="flex items-start justify-between mb-4">
                 <div className="space-y-1">
                   <div className="flex items-center gap-3">
@@ -123,9 +113,7 @@ function Orders() {
                       ORD-{String(order.orderId).padStart(4, "0")}
                     </h3>
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium border capitalize ${getStatusStyle(
-                        order.status
-                      )}`}
+                      className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusStyle(order.status)}`}
                     >
                       <span className="flex items-center gap-1.5">
                         {getStatusIcon(order.status)}
@@ -135,43 +123,51 @@ function Orders() {
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Calendar className="w-4 h-4" />
-                    {formatDate()}
+                    <span>
+                      {order.date
+                        ? new Date(order.date).toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })
+                        : "No date"}
+                    </span>
                   </div>
                 </div>
+
                 <div className="text-right">
                   <div className="text-sm text-muted-foreground mb-1">
-                    Total Items
+                    Total
                   </div>
-                  <div className="text-2xl font-bold text-foreground flex items-center gap-1">
-                    {order.totalQuantity}
+                  <div className="text-2xl font-bold text-foreground">
+                    ₱{order.totalPrice.toFixed(2)}
                   </div>
                 </div>
               </div>
 
+              {/* ── Order line item ── */}
               <div className="border-t border-border pt-4">
                 <h4 className="text-sm font-medium text-muted-foreground mb-3">
                   Order Summary
                 </h4>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between py-2 px-3 bg-muted/50 rounded-md">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-muted rounded-md flex items-center justify-center">
-                        <Package className="w-5 h-5 text-muted-foreground" />
+                <div className="flex items-center justify-between py-2 px-3 bg-muted/50 rounded-md">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-muted rounded-md flex items-center justify-center">
+                      <Package className="w-5 h-5 text-muted-foreground" />
+                    </div>
+                    <div>
+                      <div className="font-medium text-foreground">
+                        {order.productName || "Unknown Product"}
                       </div>
-                      <div>
-                        <div className="font-medium text-foreground">
-                          Total Items
-                        </div>
-                        <div className="text-sm text-muted-foreground">
-                          {order.totalItems} products
-                        </div>
+                      <div className="text-sm text-muted-foreground">
+                        {order.totalQuantity} × ₱{order.productPrice.toFixed(2)}
                       </div>
                     </div>
-                    <div className="font-semibold text-foreground flex items-center gap-1">
-                      <PhilippinePeso className="w-5 h-5" />
-                      {/* We don't have price yet in backend, placeholder 0 */}
-                      0.00
-                    </div>
+                  </div>
+                  <div className="font-semibold text-foreground">
+                    ₱{order.totalPrice.toFixed(2)}
                   </div>
                 </div>
               </div>
@@ -183,4 +179,4 @@ function Orders() {
   );
 }
 
-export default Orders;
+export default CustomerOrders;

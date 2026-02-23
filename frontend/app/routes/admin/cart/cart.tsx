@@ -24,7 +24,6 @@ function Cart() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
-
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -59,8 +58,8 @@ function Cart() {
         </div>
         {selectedItems.length > 0 && (
           <span className="text-sm text-muted-foreground">
-            {selectedItems.length} item
-            {selectedItems.length > 1 ? "s" : ""} selected
+            {selectedItems.length} item{selectedItems.length > 1 ? "s" : ""}{" "}
+            selected
           </span>
         )}
       </div>
@@ -75,26 +74,29 @@ function Cart() {
           <div className="space-y-4 mb-6">
             {cart.map((item) => {
               const product = products.find((p) => p.id === item.productId);
-
               const isSelected = selectedItems.includes(item.productId);
+              const outOfStock = product !== undefined && product.stock === 0;
 
               return (
                 <div
                   key={item.productId}
                   className={`bg-card border rounded-lg p-4 transition-all hover:shadow-md ${
-                    isSelected
-                      ? "border-primary ring-2 ring-primary/20"
-                      : "border-border"
+                    outOfStock
+                      ? "border-destructive/50 opacity-75"
+                      : isSelected
+                        ? "border-primary ring-2 ring-primary/20"
+                        : "border-border"
                   }`}
                 >
                   <div className="flex items-center gap-4">
                     <input
                       type="checkbox"
                       checked={isSelected}
+                      disabled={outOfStock}
                       onChange={() =>
                         toggleSelection(item.productId, setSelectedItems)
                       }
-                      className="w-5 h-5"
+                      className="w-5 h-5 disabled:cursor-not-allowed"
                     />
 
                     <div className="w-20 h-20 bg-muted rounded-lg flex items-center justify-center">
@@ -105,46 +107,67 @@ function Cart() {
                       <h3 className="font-semibold text-lg">
                         {product?.name || "Unknown Product"}
                       </h3>
-                      <p className="text-sm text-muted-foreground">
-                        Stock: {product?.stock ?? "?"}
-                      </p>
+                      {outOfStock ? (
+                        <span className="inline-block text-xs font-semibold text-destructive-foreground bg-destructive/80 px-2 py-0.5 rounded mt-1">
+                          Out of Stock
+                        </span>
+                      ) : (
+                        <p className="text-sm text-muted-foreground">
+                          Stock: {product?.stock ?? "?"}
+                        </p>
+                      )}
                     </div>
 
-                    <div className="flex items-center gap-2 bg-muted rounded-lg p-1">
-                      <button
-                        onClick={() =>
-                          handleQuantity(
-                            item.productId,
-                            "minus",
-                            item.quantity,
-                            setCart,
-                          )
-                        }
-                      >
-                        <Minus className="w-4 h-4" />
-                      </button>
+                    {/* Quantity controls — hidden when out of stock */}
+                    {!outOfStock && (
+                      <div className="flex items-center gap-2 bg-muted rounded-lg p-1">
+                        <button
+                          onClick={() =>
+                            handleQuantity(
+                              item.productId,
+                              "minus",
+                              item.quantity,
+                              product?.stock ?? 0,
+                              setCart,
+                            )
+                          }
+                          className="p-1 rounded hover:bg-background transition-colors"
+                        >
+                          <Minus className="w-4 h-4" />
+                        </button>
 
-                      <span className="w-12 text-center font-semibold">
-                        {item.quantity}
-                      </span>
+                        <span className="w-12 text-center font-semibold">
+                          {item.quantity}
+                        </span>
 
-                      <button
-                        onClick={() =>
-                          handleQuantity(
-                            item.productId,
-                            "add",
-                            item.quantity,
-                            setCart,
-                          )
-                        }
-                      >
-                        <Plus className="w-4 h-4" />
-                      </button>
-                    </div>
+                        <button
+                          onClick={() =>
+                            handleQuantity(
+                              item.productId,
+                              "add",
+                              item.quantity,
+                              product?.stock ?? 0,
+                              setCart,
+                            )
+                          }
+                          className="p-1 rounded hover:bg-background transition-colors"
+                        >
+                          <Plus className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
 
                     <button
-                      onClick={() => handleBuyNow(item.productId, setCart)}
-                      className="px-4 py-2 bg-primary text-primary-foreground rounded-lg"
+                      disabled={outOfStock}
+                      onClick={() =>
+                        handleBuyNow(
+                          item.productId,
+                          item.quantity,
+                          setCart,
+                          setProducts,
+                        )
+                      }
+                      className="px-4 py-2 bg-primary text-primary-foreground rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90 transition-colors"
                     >
                       Buy Now
                     </button>
@@ -156,16 +179,25 @@ function Cart() {
 
           <div className="sticky bottom-0 bg-card border-t border-border p-4 rounded-lg shadow-lg">
             <div className="flex items-center justify-between">
-              <span>{selectedItems.length} selected</span>
+              <span className="text-sm text-muted-foreground">
+                {selectedItems.length} item
+                {selectedItems.length !== 1 ? "s" : ""} selected
+              </span>
 
               <button
                 onClick={() =>
-                  handleBuySelected(selectedItems, setCart, setSelectedItems)
+                  handleBuySelected(
+                    selectedItems,
+                    cart,
+                    setCart,
+                    setSelectedItems,
+                    setProducts,
+                  )
                 }
                 disabled={selectedItems.length === 0}
-                className="px-6 py-3 bg-primary text-primary-foreground rounded-lg"
+                className="px-6 py-3 bg-primary text-primary-foreground rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90 transition-colors"
               >
-                Buy Selected
+                Buy Selected ({selectedItems.length})
               </button>
             </div>
           </div>

@@ -1,12 +1,19 @@
 import type React from "react";
-
 import { useState } from "react";
 import { useNavigate, Link } from "react-router";
-import { Mail, Lock, Eye, EyeOff, ArrowLeft, UserPlus } from "lucide-react";
-
+import {
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  ArrowLeft,
+  UserPlus,
+  User,
+} from "lucide-react";
 import { handleRegister } from "../../handlers/auth/authHandler";
 
 function Register() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -15,7 +22,7 @@ function Register() {
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    handleRegister({ email, password, setIsLoading, navigate });
+    handleRegister({ name, email, password, setIsLoading, navigate });
   };
 
   return (
@@ -44,6 +51,24 @@ function Register() {
             </div>
 
             <form onSubmit={onSubmit} className="space-y-4">
+              {/* Name */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">
+                  Full Name
+                </label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Juan dela Cruz"
+                    className="w-full pl-10 pr-4 py-2.5 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-foreground placeholder:text-muted-foreground"
+                  />
+                </div>
+              </div>
+
+              {/* Email */}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground">
                   Email
@@ -60,6 +85,7 @@ function Register() {
                 </div>
               </div>
 
+              {/* Password */}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground">
                   Password

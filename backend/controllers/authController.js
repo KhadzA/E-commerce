@@ -16,30 +16,32 @@ const readUsersFromFile = () => {
       const idMatch = line.match(/userId:(\d+)/);
       const emailMatch = line.match(/userEmail:(\S+)/);
       const passMatch = line.match(/userPassword:(\S+)/);
+      const roleMatch = line.match(/userRole:(\S+)/);
 
       return {
         id: idMatch ? parseInt(idMatch[1]) : 0,
         email: emailMatch ? emailMatch[1] : "",
         password: passMatch ? passMatch[1] : "",
+        role: roleMatch ? roleMatch[1] : "customer",
       };
     });
 };
 
 // Helper: append a new user to file
-const addUserToFile = (id, email, password) => {
-  const line = `userId:${id} userEmail:${email} userPassword:${password}\n`;
+const addUserToFile = (id, email, password, role = "customer") => {
+  const line = `userId:${id} userEmail:${email} userPassword:${password} userRole:${role}\n`;
   fs.appendFileSync(filePath, line);
 };
 
 // Helper: add profile to file
-const addProfileToFile = (userId, email) => {
-  const line = `userId:${userId} email:${email} name: phone: address:\n`;
+const addProfileToFile = (userId, email, name, role = "customer") => {
+  const line = `userId:${userId} email:${email} name:${name || ""} phone: address: role:${role}\n`;
   fs.appendFileSync(profileFilePath, line);
 };
 
 // Register user
 export const userRegister = (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, name } = req.body;
 
   if (!email || !password)
     return res.status(400).json({ message: "Email and password required." });
@@ -50,14 +52,11 @@ export const userRegister = (req, res) => {
   if (existingUser)
     return res.status(400).json({ message: "User already exists." });
 
-  // Generate new userId
   const newUserId = users.length > 0 ? users[users.length - 1].id + 1 : 1;
+  const role = "customer";
 
-  // Save user
-  addUserToFile(newUserId, email, password);
-
-  // Auto-create profile
-  addProfileToFile(newUserId, email);
+  addUserToFile(newUserId, email, password, role);
+  addProfileToFile(newUserId, email, name, role);
 
   res.status(201).json({
     message: "User registered successfully.",
