@@ -29,7 +29,7 @@ const writeCartsToFile = (carts) => {
   const data = carts
     .map(
       (c) =>
-        `userId:${c.userId} productId:${c.productId} quantity:${c.quantity}`
+        `userId:${c.userId} productId:${c.productId} quantity:${c.quantity}`,
     )
     .join("\n");
 
@@ -57,7 +57,7 @@ export const addToCart = (req, res) => {
 
   const carts = readCartsFromFile();
   const existing = carts.find(
-    (c) => c.userId === userId && c.productId === parseInt(productId)
+    (c) => c.userId === userId && c.productId === parseInt(productId),
   );
 
   if (existing) {
@@ -81,7 +81,7 @@ export const updateCartItem = (req, res) => {
 
   const carts = readCartsFromFile();
   const item = carts.find(
-    (c) => c.userId === userId && c.productId === parseInt(productId)
+    (c) => c.userId === userId && c.productId === parseInt(productId),
   );
 
   if (!item)
@@ -98,7 +98,7 @@ export const removeFromCart = (req, res) => {
 
   let carts = readCartsFromFile();
   const index = carts.findIndex(
-    (c) => c.userId === userId && c.productId === parseInt(productId)
+    (c) => c.userId === userId && c.productId === parseInt(productId),
   );
 
   if (index === -1)

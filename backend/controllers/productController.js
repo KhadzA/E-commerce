@@ -3,7 +3,7 @@ import path from "path";
 
 const filePath = path.resolve("productsTemp.txt");
 
-//  read all products from file
+// Read all products from file
 const readProductsFromFile = () => {
   if (!fs.existsSync(filePath)) return [];
   const data = fs.readFileSync(filePath, "utf8");
@@ -16,22 +16,24 @@ const readProductsFromFile = () => {
       const nameMatch = line.match(/productName:(\S+)/);
       const priceMatch = line.match(/productPrice:(\S+)/);
       const stockMatch = line.match(/productStock:(\S+)/);
+      const categoryMatch = line.match(/productCategory:(\S+)/);
 
       return {
         id: parseInt(idMatch ? idMatch[1] : 0),
         name: nameMatch ? nameMatch[1] : "",
         price: parseFloat(priceMatch ? priceMatch[1] : 0),
         stock: parseInt(stockMatch ? stockMatch[1] : 0),
+        category: categoryMatch ? categoryMatch[1] : "",
       };
     });
 };
 
-// write all products to file (overwrite?)
+// Write all products to file (overwrite)
 const writeProductsToFile = (products) => {
   const data = products
     .map(
       (p) =>
-        `productId:${p.id} productName:${p.name} productPrice:${p.price} productStock:${p.stock}`
+        `productId:${p.id} productName:${p.name} productPrice:${p.price} productStock:${p.stock} productCategory:${p.category ?? ""}`,
     )
     .join("\n");
 
@@ -44,7 +46,7 @@ export const getProducts = (req, res) => {
   res.json(products);
 };
 
-//GET product by ID
+// GET product by ID
 export const getProductById = (req, res) => {
   const { id } = req.params;
   const products = readProductsFromFile();
@@ -54,9 +56,9 @@ export const getProductById = (req, res) => {
   res.json(product);
 };
 
-//ADD new product
+// ADD new product
 export const addProduct = (req, res) => {
-  const { name, price, stock } = req.body;
+  const { name, price, stock, category } = req.body;
 
   if (!name || !price || !stock)
     return res
@@ -66,17 +68,23 @@ export const addProduct = (req, res) => {
   const products = readProductsFromFile();
   const newId = products.length > 0 ? products[products.length - 1].id + 1 : 1;
 
-  const newProduct = { id: newId, name, price, stock };
+  const newProduct = {
+    id: newId,
+    name,
+    price,
+    stock,
+    category: category ?? "",
+  };
   products.push(newProduct);
 
   writeProductsToFile(products);
   res.status(201).json({ message: "Product added.", product: newProduct });
 };
 
-//PDATE product
+// UPDATE product
 export const updateProduct = (req, res) => {
   const { id } = req.params;
-  const { name, price, stock } = req.body;
+  const { name, price, stock, category } = req.body;
 
   const products = readProductsFromFile();
   const index = products.findIndex((p) => p.id === parseInt(id));
@@ -87,12 +95,13 @@ export const updateProduct = (req, res) => {
   if (name) products[index].name = name;
   if (price) products[index].price = price;
   if (stock) products[index].stock = stock;
+  if (category !== undefined) products[index].category = category;
 
   writeProductsToFile(products);
   res.json({ message: "Product updated.", product: products[index] });
 };
 
-//DELETE product
+// DELETE product
 export const deleteProduct = (req, res) => {
   const { id } = req.params;
 

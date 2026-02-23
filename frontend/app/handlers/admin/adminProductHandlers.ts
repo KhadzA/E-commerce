@@ -1,105 +1,145 @@
-export const handleAddProduct = (
+const BASE_URL = "http://localhost:5000";
+
+// Helper to get userId (adjust based on your auth setup)
+const getUserId = (): string => {
+  return localStorage.getItem("userId") || "guest";
+};
+
+// ─── PRODUCT HANDLERS ────────────────────────────────────────────────────────
+
+export const handleFetchProducts = async (
+  setProducts: React.Dispatch<React.SetStateAction<any[]>>,
+  setQuantity: React.Dispatch<React.SetStateAction<number[]>>,
+) => {
+  try {
+    const res = await fetch(`${BASE_URL}/products`);
+    const data = await res.json();
+    setProducts(data);
+    setQuantity(data.map(() => 1));
+  } catch (err) {
+    console.error("Failed to fetch products:", err);
+  }
+};
+
+export const handleAddProduct = async (
   name: string,
   stock: number,
   category: string,
+  price: number,
   setProducts: React.Dispatch<React.SetStateAction<any[]>>,
   setQuantity: React.Dispatch<React.SetStateAction<number[]>>,
   setProductName: React.Dispatch<React.SetStateAction<string>>,
   setStock: React.Dispatch<React.SetStateAction<number | "">>,
-  setProductCategory: React.Dispatch<React.SetStateAction<string>>
+  setProductCategory: React.Dispatch<React.SetStateAction<string>>,
+  setPrice: React.Dispatch<React.SetStateAction<number | "">>,
 ) => {
   if (!name.trim()) return;
 
-  const selectedProduct = {
-    name,
-    stock: Number(stock),
-    category,
-  };
+  try {
+    const res = await fetch(`${BASE_URL}/products`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name,
+        price: Number(price),
+        stock: Number(stock),
+        category,
+      }),
+    });
 
-  const storedProducts = JSON.parse(localStorage.getItem("products") || "[]");
-
-  const exists = storedProducts.some(
-    (p: any) => p.name === selectedProduct.name
-  );
-
-  if (!exists) {
-    storedProducts.push(selectedProduct);
-    localStorage.setItem("products", JSON.stringify(storedProducts));
-    setProducts(storedProducts);
-    setQuantity((prev) => [...prev, 1]);
-  }
-
-  setProductName("");
-  setStock("");
-  setProductCategory("");
-};
-
-export const handleAddCart = (
-  index: number,
-  products: { name: string; category: string }[],
-  quantity: number[]
-) => {
-  const selectedProduct = {
-    name: products[index].name,
-    quantity: quantity[index],
-    category: products[index].category,
-  };
-
-  const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-
-  const existingProductIndex = cart.findIndex(
-    (item: any) => item.name === selectedProduct.name
-  );
-
-  if (existingProductIndex !== -1) {
-    cart[existingProductIndex].quantity += selectedProduct.quantity;
-  } else {
-    cart.push(selectedProduct);
-  }
-
-  localStorage.setItem("cart", JSON.stringify(cart));
-
-  alert(`Added ${selectedProduct.quantity} ${selectedProduct.name} to cart`);
-};
-
-export const handleBuyNow = (
-  index: number,
-  products: { name: string; category: string; stock: number }[],
-  quantity: number[],
-  setProducts: React.Dispatch<React.SetStateAction<any[]>>
-) => {
-  const selectedProduct = {
-    name: products[index].name,
-    quantity: quantity[index],
-    stock: products[index].stock,
-  };
-
-  // Get current orders
-  const orders: { name: string; quantity: number; stock: number }[] =
-    JSON.parse(localStorage.getItem("orders") || "[]");
-
-  if (selectedProduct.quantity) {
-    // Reduce stock
-    const updatedProducts = [...products];
-    updatedProducts[index] = {
-      ...updatedProducts[index],
-      stock: updatedProducts[index].stock - selectedProduct.quantity,
-    };
-
-    if (updatedProducts[index].stock < 0) {
-      alert(`Not enough stock for ${selectedProduct.name}`);
+    if (!res.ok) {
+      const err = await res.json();
+      alert(err.message || "Failed to add product.");
       return;
     }
 
-    // Save updated products back
-    localStorage.setItem("products", JSON.stringify(updatedProducts));
-    setProducts(updatedProducts);
+    // Refetch all products to keep state in sync
+    const allRes = await fetch(`${BASE_URL}/products`);
+    const allData = await allRes.json();
+    setProducts(allData);
+    setQuantity(allData.map(() => 1));
 
-    // Add to orders
-    orders.push(selectedProduct);
-    localStorage.setItem("orders", JSON.stringify(orders));
+    setProductName("");
+    setStock("");
+    setProductCategory("");
+    setPrice("");
+  } catch (err) {
+    console.error("Failed to add product:", err);
+  }
+};
 
-    alert(`Ordered ${selectedProduct.quantity} ${selectedProduct.name}(s)`);
+export const handleAddCart = async (
+  index: number,
+  products: { id: number; name: string; category: string }[],
+  quantity: number[],
+) => {
+  const userId = getUserId();
+  const selectedProduct = products[index];
+
+  try {
+    const res = await fetch(`${BASE_URL}/cart/${userId}/add`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        productId: selectedProduct.id,
+        quantity: quantity[index],
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      alert(err.message || "Failed to add to cart.");
+      return;
+    }
+
+    alert(`Added ${quantity[index]} × ${selectedProduct.name} to cart`);
+  } catch (err) {
+    console.error("Failed to add to cart:", err);
+  }
+};
+
+export const handleBuyNow = async (
+  index: number,
+  products: { id: number; name: string; stock: number; category: string }[],
+  quantity: number[],
+  setProducts: React.Dispatch<React.SetStateAction<any[]>>,
+) => {
+  const selectedProduct = products[index];
+  const qty = quantity[index];
+
+  if (qty > selectedProduct.stock) {
+    alert(`Not enough stock for ${selectedProduct.name}`);
+    return;
+  }
+
+  try {
+    const userId = getUserId();
+    const res = await fetch(`${BASE_URL}/orders`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId,
+        productId: selectedProduct.id,
+        quantity: qty,
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      alert(err.message || "Failed to place order.");
+      return;
+    }
+
+    const data = await res.json();
+
+    // Sync updated product stock from response
+    setProducts((prev) =>
+      prev.map((p) => (p.id === selectedProduct.id ? data.updatedProduct : p)),
+    );
+
+    alert(`Ordered ${qty} × ${selectedProduct.name}`);
+  } catch (err) {
+    console.error("Failed to buy now:", err);
   }
 };
 
@@ -107,15 +147,15 @@ export const handleQuantity = (
   index: number,
   type: "add" | "minus",
   products: { name: string; stock: number; category: string }[],
-  setQuantity: React.Dispatch<React.SetStateAction<number[]>>
+  setQuantity: React.Dispatch<React.SetStateAction<number[]>>,
 ) => {
   setQuantity((prev) => {
     const newQuantity = [...prev];
     if (type === "add") {
-      newQuantity[index] += 1;
-      if (newQuantity[index] > products[index].stock) {
-        newQuantity[index] = products[index].stock;
-      }
+      newQuantity[index] = Math.min(
+        newQuantity[index] + 1,
+        products[index].stock,
+      );
     } else if (type === "minus" && newQuantity[index] > 1) {
       newQuantity[index] -= 1;
     }
@@ -125,109 +165,195 @@ export const handleQuantity = (
 
 export const toggleSelection = (
   name: string,
-  setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>
+  setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>,
 ) => {
   setSelectedItems((prev) =>
-    prev.includes(name) ? prev.filter((item) => item !== name) : [...prev, name]
+    prev.includes(name)
+      ? prev.filter((item) => item !== name)
+      : [...prev, name],
   );
 };
 
-export const handleDeleteSelected = (
+export const handleDeleteSelected = async (
   selectedItems: string[],
-  products: { name: string; stock: number; category: string }[],
+  products: { id: number; name: string; stock: number; category: string }[],
   setProducts: React.Dispatch<React.SetStateAction<any[]>>,
-  setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>
+  setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>,
 ) => {
   if (selectedItems.length === 0) {
     alert("No products selected!");
     return;
   }
 
-  const updatedProducts = products.filter(
-    (prod) => !selectedItems.includes(prod.name)
-  );
+  try {
+    const toDelete = products.filter((p) => selectedItems.includes(p.name));
 
-  setProducts(updatedProducts);
-  localStorage.setItem("products", JSON.stringify(updatedProducts));
-  setSelectedItems([]);
+    await Promise.all(
+      toDelete.map((p) =>
+        fetch(`${BASE_URL}/products/${p.id}`, { method: "DELETE" }),
+      ),
+    );
+
+    const allRes = await fetch(`${BASE_URL}/products`);
+    const allData = await allRes.json();
+    setProducts(allData);
+    setSelectedItems([]);
+  } catch (err) {
+    console.error("Failed to delete selected:", err);
+  }
 };
 
-export const handleDeleteProduct = (
-  name: string,
-  products: { name: string; stock: number; category: string }[],
-  setProducts: React.Dispatch<React.SetStateAction<any[]>>
+export const handleDeleteProduct = async (
+  id: number,
+  setProducts: React.Dispatch<React.SetStateAction<any[]>>,
+  setQuantity: React.Dispatch<React.SetStateAction<number[]>>,
 ) => {
-  const updatedProducts = products.filter((p) => p.name !== name);
-  localStorage.setItem("products", JSON.stringify(updatedProducts));
-  setProducts(updatedProducts);
+  try {
+    const res = await fetch(`${BASE_URL}/products/${id}`, { method: "DELETE" });
+
+    if (!res.ok) {
+      const err = await res.json();
+      alert(err.message || "Failed to delete product.");
+      return;
+    }
+
+    const allRes = await fetch(`${BASE_URL}/products`);
+    const allData = await allRes.json();
+    setProducts(allData);
+    setQuantity(allData.map(() => 1));
+  } catch (err) {
+    console.error("Failed to delete product:", err);
+  }
 };
 
 export const handleEditProduct = (
   index: number,
-  products: { name: string; stock: number; category: string }[],
+  products: {
+    id: number;
+    name: string;
+    stock: number;
+    category: string;
+    price: number;
+  }[],
   setEditIndex: React.Dispatch<React.SetStateAction<number | null>>,
   setEditForm: React.Dispatch<
-    React.SetStateAction<{ name: string; stock: number; category: string }>
-  >
+    React.SetStateAction<{
+      name: string;
+      stock: number;
+      category: string;
+      price: number;
+    }>
+  >,
 ) => {
   const product = products[index];
   setEditForm({
     name: product.name,
     stock: product.stock,
     category: product.category,
+    price: product.price,
   });
   setEditIndex(index);
 };
 
-export const handleSaveEdit = (
+export const handleSaveEdit = async (
   editIndex: number | null,
-  editForm: { name: string; stock: number; category: string },
-  products: { name: string; stock: number; category: string }[],
+  editForm: { name: string; stock: number; category: string; price: number },
+  products: {
+    id: number;
+    name: string;
+    stock: number;
+    category: string;
+    price: number;
+  }[],
   setProducts: React.Dispatch<React.SetStateAction<any[]>>,
   setEditIndex: React.Dispatch<React.SetStateAction<number | null>>,
   setEditForm: React.Dispatch<
-    React.SetStateAction<{ name: string; stock: number; category: string }>
-  >
+    React.SetStateAction<{
+      name: string;
+      stock: number;
+      category: string;
+      price: number;
+    }>
+  >,
 ) => {
   if (editIndex === null) return;
 
-  const updatedProducts = [...products];
-  updatedProducts[editIndex] = { ...updatedProducts[editIndex], ...editForm };
+  const productId = products[editIndex].id;
 
-  localStorage.setItem("products", JSON.stringify(updatedProducts));
-  setProducts(updatedProducts);
-  setEditIndex(null);
-  setEditForm({ name: "", stock: 0, category: "" });
+  try {
+    const res = await fetch(`${BASE_URL}/products/${productId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: editForm.name,
+        stock: editForm.stock,
+        price: editForm.price,
+        category: editForm.category,
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      alert(err.message || "Failed to update product.");
+      return;
+    }
+
+    const allRes = await fetch(`${BASE_URL}/products`);
+    const allData = await allRes.json();
+    setProducts(allData);
+    setEditIndex(null);
+    setEditForm({ name: "", stock: 0, category: "", price: 0 });
+  } catch (err) {
+    console.error("Failed to save edit:", err);
+  }
 };
 
 export const handleCancelEdit = (
   setEditIndex: React.Dispatch<React.SetStateAction<number | null>>,
   setEditForm: React.Dispatch<
-    React.SetStateAction<{ name: string; stock: number; category: string }>
-  >
+    React.SetStateAction<{
+      name: string;
+      stock: number;
+      category: string;
+      price: number;
+    }>
+  >,
 ) => {
   setEditIndex(null);
-  setEditForm({ name: "", stock: 0, category: "" });
+  setEditForm({ name: "", stock: 0, category: "", price: 0 });
 };
 
 export const handleSearchProduct = (
   searchTerm: string,
-  products: { name: string; stock: number; category: string }[],
+  products: {
+    id: number;
+    name: string;
+    stock: number;
+    price: number;
+    category: string;
+  }[],
   setFilteredProducts: React.Dispatch<
-    React.SetStateAction<{ name: string; stock: number; category: string }[]>
-  >
+    React.SetStateAction<
+      {
+        id: number;
+        name: string;
+        stock: number;
+        price: number;
+        category: string;
+      }[]
+    >
+  >,
 ) => {
   const lower = searchTerm.toLowerCase().trim();
-
   if (lower === "") {
-    // If empty, show all products
     setFilteredProducts(products);
   } else {
-    const filtered = products.filter(
-      (p) =>
-        p.name.toLowerCase().includes(lower) ||
-        p.category.toLowerCase().includes(lower)
+    setFilteredProducts(
+      products.filter(
+        (p) =>
+          p.name.toLowerCase().includes(lower) ||
+          p.category.toLowerCase().includes(lower),
+      ),
     );
-    setFilteredProducts(filtered);
   }
 };

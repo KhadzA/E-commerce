@@ -1,8 +1,9 @@
 import express from "express";
-import { getOrders } from "../controllers/orderController.js";
+import { getOrders, createOrder } from "../controllers/orderController.js";
 
 const router = express.Router();
 
-router.get("/ordersList", getOrders); //This part should have a ID authorization for Single User Orders
+router.get("/ordersList", getOrders); // GET all orders
+router.post("/", createOrder); // POST — place order + deduct stock
 
 export default router;
