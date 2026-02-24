@@ -5,8 +5,6 @@ const getUserId = (): string => {
   return localStorage.getItem("userId") || "guest";
 };
 
-// ─── PRODUCT HANDLERS ────────────────────────────────────────────────────────
-
 export const handleFetchProducts = async (
   setProducts: React.Dispatch<React.SetStateAction<any[]>>,
   setQuantity: React.Dispatch<React.SetStateAction<number[]>>,

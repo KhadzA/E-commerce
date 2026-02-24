@@ -14,7 +14,7 @@ import {
   handleSaveEdit,
   handleCancelEdit,
   handleSearchProduct,
-} from "../../../handlers/admin/adminProductHandlers";
+} from "../../../handlers/pageHandlers/productHandlers";
 import {
   Plus,
   Minus,

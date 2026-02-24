@@ -6,8 +6,6 @@ const getUserId = () => {
   return userId;
 };
 
-// ─── Buy a single item from cart ────────────────────────────────────────────
-
 export const handleBuyNow = async (
   productId: number,
   quantity: number,
@@ -53,8 +51,6 @@ export const handleBuyNow = async (
     alert("Failed to process order");
   }
 };
-
-// ─── Buy all selected items from cart ───────────────────────────────────────
 
 export const handleBuySelected = async (
   selectedProductIds: number[],
@@ -117,8 +113,6 @@ export const handleBuySelected = async (
   }
 };
 
-// ─── Update quantity in cart ─────────────────────────────────────────────────
-
 export const handleQuantity = async (
   productId: number,
   type: "add" | "minus",
@@ -156,8 +150,6 @@ export const handleQuantity = async (
     alert("Failed to update quantity");
   }
 };
-
-// ─── Toggle checkbox selection ───────────────────────────────────────────────
 
 export const toggleSelection = (
   productId: number,

@@ -80,7 +80,7 @@ export const fetchDashboardData = async (): Promise<DashboardData> => {
   const products: any[] = await productsRes.json();
   const { orders }: { orders: any[] } = await ordersRes.json();
 
-  // ── Stats ──────────────────────────────────────────────────────────────────
+  //  Stats
   const totalRevenue = orders.reduce((sum, o) => sum + (o.totalPrice ?? 0), 0);
 
   const todayStr = new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
@@ -95,7 +95,7 @@ export const fetchDashboardData = async (): Promise<DashboardData> => {
     todayRevenue,
   };
 
-  // ── Sales trend — group orders by real date (last 6 months) ────────────────
+  // Sales group orders by real date (last 6 months)
   const monthlyMap: Record<string, { orders: number; revenue: number }> = {};
 
   const now = new Date();
@@ -122,7 +122,7 @@ export const fetchDashboardData = async (): Promise<DashboardData> => {
     revenue: parseFloat(monthlyMap[key].revenue.toFixed(2)),
   }));
 
-  // ── Category distribution from products ────────────────────────────────────
+  // Category distribution from products
   const catMap: Record<string, number> = {};
   products.forEach((p) => {
     const cat = p.category?.trim() || "Uncategorized";
@@ -132,7 +132,7 @@ export const fetchDashboardData = async (): Promise<DashboardData> => {
     ([name, count]) => ({ name, count }),
   );
 
-  // ── Top products by total revenue from orders ──────────────────────────────
+  //Top products by total revenue from orders
   const productMap: Record<string, TopProduct> = {};
   orders.forEach((o) => {
     const key = o.productName || `Product #${o.productId}`;
@@ -154,7 +154,7 @@ export const fetchDashboardData = async (): Promise<DashboardData> => {
       totalRevenue: parseFloat(p.totalRevenue.toFixed(2)),
     }));
 
-  // ── Top categories by total revenue from orders ───────────────────────────
+  // Top categories by total revenue from orders
   const categoryRevenueMap: Record<string, TopCategory> = {};
   orders.forEach((o) => {
     const cat = (o.category as string)?.trim() || "Uncategorized";
@@ -176,7 +176,7 @@ export const fetchDashboardData = async (): Promise<DashboardData> => {
       totalRevenue: parseFloat(c.totalRevenue.toFixed(2)),
     }));
 
-  // ── Top revenue day ──────────────────────────────────────────────────────
+  //Top revenue day
   const dayMap: Record<string, { totalRevenue: number; totalOrders: number }> =
     {};
   orders.forEach((o) => {
@@ -197,7 +197,7 @@ export const fetchDashboardData = async (): Promise<DashboardData> => {
           }))
           .sort((a, b) => b.totalRevenue - a.totalRevenue)[0];
 
-  // ── Top users by total spending ────────────────────────────────────────────
+  //Top users by total spending
   const userMap: Record<string, TopUser> = {};
   orders.forEach((o) => {
     const key = o.userId;

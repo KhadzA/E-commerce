@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Package, Calendar, CheckCircle, Clock, XCircle } from "lucide-react";
-import { fetchUserOrders } from "../../../handlers/admin/adminOrderHandlers";
+import { fetchUserOrders } from "../../../handlers/pageHandlers/orderHandlers";
 
 interface Order {
   orderId: number;

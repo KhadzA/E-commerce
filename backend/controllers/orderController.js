@@ -4,8 +4,6 @@ import path from "path";
 const filePath = path.resolve("ordersTemp.txt");
 const productsFilePath = path.resolve("productsTemp.txt");
 
-// ─── Helpers ────────────────────────────────────────────────────────────────
-
 const readOrdersFromFile = () => {
   if (!fs.existsSync(filePath)) return [];
 
@@ -77,8 +75,6 @@ const writeProductsToFile = (products) => {
 
   fs.writeFileSync(productsFilePath, data + "\n", "utf8");
 };
-
-// ─── Controllers ────────────────────────────────────────────────────────────
 
 // POST /orders — Create order, deduct stock, persist price snapshot
 export const createOrder = (req, res) => {

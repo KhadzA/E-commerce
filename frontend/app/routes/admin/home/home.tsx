@@ -32,7 +32,7 @@ import {
   type TopCategory,
   type TopRevenueDay,
   type TopUser,
-} from "../../../handlers/admin/adminHomeHandlers";
+} from "../../../handlers/pageHandlers/adminHomeHandlers";
 
 function Home() {
   const [stats, setStats] = useState<DashboardStats>({

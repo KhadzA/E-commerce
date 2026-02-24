@@ -7,7 +7,7 @@ import {
   handleBuyNow,
   handleQuantity,
   handleSearchProduct,
-} from "../../../handlers/admin/adminProductHandlers";
+} from "../../../handlers/pageHandlers/productHandlers";
 import { Plus, Minus, ShoppingCart, Package, Search } from "lucide-react";
 
 function CustomerProduct() {

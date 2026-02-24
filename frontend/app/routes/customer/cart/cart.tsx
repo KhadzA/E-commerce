@@ -6,7 +6,7 @@ import {
   handleBuySelected,
   handleQuantity,
   toggleSelection,
-} from "../../../handlers/admin/adminCartHandlers";
+} from "../../../handlers/pageHandlers/cartHandlers";
 import { Minus, Plus, ShoppingCart, Package } from "lucide-react";
 
 interface CartItem {
