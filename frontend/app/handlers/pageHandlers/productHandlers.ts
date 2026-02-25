@@ -1,6 +1,6 @@
 const BASE_URL = "http://localhost:5000";
 
-// Helper to get userId (adjust based on your auth setup)
+// Helper to get userId (adjust based on auth setup)
 const getUserId = (): string => {
   return localStorage.getItem("userId") || "guest";
 };
